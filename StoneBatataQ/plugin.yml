@@ -1,0 +1,5 @@
+name: StoneBatataQ
+version: 1.0
+main: me.zsnow.stonebatataquente.Main
+commands:
+  batata:

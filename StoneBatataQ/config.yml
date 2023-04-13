@@ -1,0 +1,121 @@
+#
+#	  ______   ____  _____   ___   ____      ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|    |_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /     | |__) | | |    | |    | | / .'   \_|  | |    |   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /      |  ___/  | |   _| '    ' | | |   ____  | |    | |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /      _| |_    _| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'     \/  \/      |_____|  |________| `.__.'    `._____.'|_____||_____|\____| \______.'
+#
+#
+
+# {prefix} -> retorna o prefix | {participantes} -> retorna o numero de participantes 
+# {tempo} -> retorna o tempo | {premio} -> retorna recompensa
+# {moeda_icon} -> retorna um icone de moeda bunitin
+# {quente_icon} -> retorna um icone de quente
+# {max_player} -> retorna a quantidade maxima de jogadores no evento
+# {batata_man} -> retorna quem esta com a batata
+
+# minimo recomendado: maior que 2
+minimo-de-participantes: 3
+maximo-de-jogadores: 100
+
+prefix: '&3{quente_icon} &3&lBATATA-QUENTE &3{quente_icon}'
+recompensa: 10000
+
+# Raio de explosao da batata
+# todos proximos serao eliminados
+raio-de-explosao: 5
+
+Tempo:
+  Entrada: 120
+  batata-explode-em: 30
+
+broadcast:
+  Entrada:
+    - ' '
+    - '{prefix} &7| &fEvento começando!'
+    - ' '
+    - '&7{seta} &fPara entrar use: &3/batata entrar'
+    - ' &fA entrada fecha em: &3{tempo} &fsegundos'
+    - ' &fParticipantes no evento: &3{participantes}&9/&3{max_player} '
+    - ' &fRecompensa em coins: &6{moeda_icon} &e{premio}'
+    - ' '
+  Entrada-fechada:
+    - ' '
+    - '{prefix} &7| &fEntrada fechada!'
+    - ' '
+    - ' &fNúmero de participantes: &3{participantes}&9/&3{max_player} '
+    - ' &fRecompensa em coins: &6{moeda_icon} &e{premio}'
+    - ' '
+  Lobby-msg:
+    - ' '
+    - '{prefix} &7| &fAguardando início! '
+    - ' '
+    - ' &fO jogador que começará com a batata'
+    - ' &fserá sorteado em &e{tempo_lobby} segundos.'
+    - ''
+  Sem-vencedores:
+    - ''
+    - ' &e[Batata-quente] &cEvento finalizado | Sem ganhadores!'
+    - ' &e[Batata-quente] &cAmbos os jogadores restantes foram pegos'
+    - ' &e[Batata-quente] &cno raio da explosão da batata!'
+    - ''
+  Com-vencedores:
+    - ''
+    - ' &e[Batata-quente] &aEvento finalizado!'
+    - ' &e[Batata-quente] &aVencedor: &7{vencedor}'
+    - ' &e[Batata-quente] &aO vencedor recebeu {premio} de coins!'
+    - ''
+  Sem-jogadores:
+    - ''
+    - '{prefix} &7| &cEvento cancelado!'
+    - ''
+    - ' &cMotivo: Não houveram jogadores o suficiente'
+    - ' &cpara que o evento fosse iniciado.'
+    - ''
+  admin-finalizou:
+    - ''
+    - '&e[Batata-quente] &cO evento foi forçado a'
+    - '&e[Batata-quente] &cfinalizar por um ADMINISTRADOR.'
+    - '&e[Batata-quente] &cNão houveram vencedores!'
+    - ''
+  evento-info:
+    - ''
+    - '{prefix} &f| informações'
+    - ''
+    - ' &fEvento: {status}'
+    - ' &fEntrada: {entrada}'
+    - ' &fParticipantes: &e{participantes}'
+    - ''
+  batata-aviso:
+    - ''
+    - '&3&lBATATA-QUENTE'
+    - ' &fEscolhendo jogador que começará'
+    - ' &fcom a batata quente...'
+    - ' '
+  batata-sorteada:
+    - ''
+    - '&c{quente_icon} &3&lBATATA-QUENTE &f{batata_man} &eestá com a batata!'
+    - ''
+  batata-tempo:
+    - '&3[Batata-quente] &eA batata irá queimar em &f{tempo_batata} segundo(s).'
+  aviso-de-quantos-explodiram: '&3[Batata-quente] &e{explodidos} jogador(es) &fpego(s) na explosão da batata.'
+  actionbar-contagem: '&3&lBATATA &7{seta} &f{batata_man}&7. &fTempo: &6{tempo_batata}&e(s)'
+  
+actionbar-contagem: True
+
+vencedor-message: '&aVocê recebeu de CONSOLE a quantia de {premio} coins :)'
+  
+Mensagens:
+  inventario-cheio: '&cEsvazie seu inventário para entrar no evento.'
+  contem-armadura: '&cRetire sua armadura para entrar no evento.'
+  entrou-no-evento: '&eVocê entrou no evento batata-quente.'
+  saiu-do-evento: '&aVocê saiu do evento.'
+  batata-saiu: '&3&l[Batata-quente] &eO jogador com a batata saiu do evento.'
+  
+Som:
+  ao-entrar: 'VILLAGER_YES'
+  ao-sair: 'VILLAGER_NO'
+  
+# Mensagem enviada ao ser explodido por estar proximo da batata
+pego-na-explosao: '&3&l[Batata-quente] &eVocê estava muito próximo da batata e foi pego na explosão!'
