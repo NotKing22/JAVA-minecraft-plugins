@@ -1,0 +1,115 @@
+#
+#	  ______   ____  _____   ___   ____      ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|    |_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /     | |__) | | |    | |    | | / .'   \_|  | |    |   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /      |  ___/  | |   _| '    ' | | |   ____  | |    | |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /      _| |_    _| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'     \/  \/      |_____|  |________| `.__.'    `._____.'|_____||_____|\____| \______.'
+#
+#
+# Admin perm: "zs.admin" || Moderator perm: "zs.mod"
+
+
+# PARA DEFINIR OS ITEM DO EVENTO USE -> /GUERREIRO SALVARITEM
+# PARA EDITAR OS ITEM, USE -> /GUERREIRO EDITARITEM
+
+
+
+NO-PERM-ADMIN: "&cVocê precisa do cargo Administrador ou superior para executar este comando."
+NO-PERM-MOD: "&cVocê precisa do cargo Moderador ou superior para executar este comando."
+
+# tempo em segundos para entrar no evento
+tempo-para-entrar: 30
+
+# maximo de jogadores na arena do evento
+maximo-de-jogadores: 200
+
+# esse é o tempo que levará para o pvp iniciar após a entrada for fechada
+time:
+  pvp: 30
+
+messages:
+  on-join: "&aVocê entrou no guerreiro."
+  saiu-do-evento: "&cVocê saiu do evento."
+  voce-nao-esta-no-evento: "&cVocê não está no evento."
+  voce-ja-esta-no-evento: "&cVocê já está no evento."
+  evento-nao-ocorrendo: "&cO evento não está ocorrendo ou sua entrada foi fechada."
+  evento-lotado: "&cO evento já atingiu o número máximo de {limite} jogadores."
+
+jogador-eliminado: "&a[Guerreiro] &f{player_death} &7foi eliminado do evento por &f{player_murder}"
+
+# essa função irá limpar os itens do chão ao morrer
+limpar-drops: True
+
+# Recomendavel deixar ativo, evita apertar Q e dropar o item
+desativar-dropar-item: True
+
+sounds:
+  on-enter: True
+  on-enter-sound: "LEVEL_UP"
+  on-exit: True
+  on-exit-sound: "LEVEL_UP"
+
+# a mensagem será enviada só para quem está no evento e os staffs.
+disable-pvp-message:
+  - ''
+  - '&a[Guerreiro] O &cPvP &ado evento foi desativado por um ADMINISTRADOR.'
+  - ''
+enable-pvp-message:
+  - ''
+  - '&a[Guerreiro] O &cPvP &ado evento foi ativado por um ADMINISTRADOR.'
+  - ''
+sound-on-change-pvp-status: "LEVEL_UP"
+broadcast-on-kick: False
+on-kick-message: "&aVocê expulsou {player} do evento."
+player-kicked-message: "&e[&6&lGUERREIRO&e] &f{player} &cfoi expulso do evento."
+invalid-kick: "&cO jogador especificado não está no evento."
+
+# esses comandos serão executados para o vencedor
+premio:
+  - 'coins add {vencedor} 10000000'
+
+
+#{tempo} {numero_de_participantes} {max_players}
+broadcast:
+  start:
+    - ''
+    - '&2&lGUERREIRO &7- &f&lENTRADA ABERTA'
+    - ''
+    - '&aPara participar, use: &f/guerreiro entrar'
+    - '&aChance de morte e PvP: &4[ON]'
+    - '&aPrêmio: &f10KK de coins'
+    - '&aParticipantes: &f{numero_de_participantes}&a/&f{max_players}'
+    - '&aEntrada fechando em: &f{tempo} segundos'
+    - ''
+  force-stop:
+    - ''
+    - '&2&lGUERREIRO &7- &c&lEVENTO ENCERRADO'
+    - ''
+    - '&cUm administrador forçou o fim do evento.'
+    - ''
+  enter-closed:
+    - ''
+    - '&2&lGUERREIRO &7- &c&lENTRADA FECHADA.'
+    - ''
+    - '&aevento iniciando...'
+    - '&aParticipantes: &f{numero_de_participantes}&a/&f{max_players}'
+  waiting-for-pvp:
+    - ''
+    - '&2&lGUERREIRO &7- &cAguardando o PvP'
+    - '&aO &cPvP &aserá liberado em: &f{tempo_to_pvp} segundos.'
+    - '&aUtilizem esse tempo para se posicionarem!'
+    - ''
+  pvp-enabled:
+    - ''
+    - '&2&lGUERREIRO &7- &6&lPVP ATIVADO!'
+    - '&eO ultimo jogador vivo será vencedor.'
+    - ''
+  end-event:
+    - ''
+    - '&a[Guerreiro] Evento finalizado!'
+    - '&a[Guerreiro] Vencedor: &7{vencedor}'
+    - '&a[Guerreiro] O vencedor recebeu 10KK de coins!'
+    - ''
+    
+   
