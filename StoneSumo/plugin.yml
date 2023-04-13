@@ -1,0 +1,5 @@
+name: StoneSumo
+version: 1.0
+main: me.zsnow.stone.sumo.Main
+commands:
+  sumo:
