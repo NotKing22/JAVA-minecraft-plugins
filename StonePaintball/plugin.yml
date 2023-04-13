@@ -1,0 +1,5 @@
+name: StonePaintball
+version: 1.0
+main: me.zsnow.stone.paintball.Main
+commands:
+  paintball:
