@@ -1,0 +1,6 @@
+name: StoneCaptureTheFlag
+version: 1.0
+main: me.zsnow.stone.bandeira.Main
+commands:
+  capture:
+    aliases: [capturar]
