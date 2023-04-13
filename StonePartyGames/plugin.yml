@@ -1,0 +1,6 @@
+name: StonePartyGames
+version: 1.0
+main: me.zsnow.stone.partygames.Main
+commands:
+  partygames:
+    aliases: [pg, party, partygame]
