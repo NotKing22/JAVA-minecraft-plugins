@@ -1,0 +1,114 @@
+#
+#	  ______   ____  _____   ___   ____      ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|    |_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /     | |__) | | |    | |    | | / .'   \_|  | |    |   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /      |  ___/  | |   _| '    ' | | |   ____  | |    | |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /      _| |_    _| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'     \/  \/      |_____|  |________| `.__.'    `._____.'|_____||_____|\____| \______.'
+#
+#
+# Admin perm: "zs.admin" || Moderator perm: "zs.mod" || Gerente perm: "zs.gerente"
+
+# Tempo para o deathmatch em segundos
+death-match-tempo: 120
+
+# tempo em segundos para entrar no evento
+tempo-para-entrar: 30
+
+# maximo de jogadores na arena do evento
+maximo-de-jogadores: 200
+
+# Minimo de players na arena para começar
+minimo-de-player: 15
+
+# Tempo antes de cada duelo puxar os jogadores (em segundos)
+tempo-para-iniciar-duelo: 5
+
+force-skip-duel: "&a&lVocê avançou o evento para a próxima batalha."
+
+inv-cheio: "&cRetire sua armadura para entrar no evento."
+contem-armadura: "&cEsvazie seu inventário para entrar no evento."
+
+entrou-no-evento: "&aVocê entrou no evento fight!"
+som-ao-entrar: "CAT_MEOW"
+
+saiu-fight: "&eVocê saiu do evento fight!"
+nao-ta-no-evento: "&cVocê não está no evento fight."
+
+sem-rank-para-entrar: "&cVocê precisa do rank &7[EsqueletoII]&c ou superior para participar do evento."
+sem-rank-som: "VILLAGER_NO"
+
+recompensas:
+  - 'coins add {vencedor} 5000000'
+mensagem-ao-vencer:
+  - '&aVocê recebeu $5.000.000 por vencer o evento!'
+
+duelos-mensagem:
+  - ''
+  - '&e[FIGHT]&6 {oponenteX} &c&lVs.&6 {oponenteY}'
+  - '&6Iniciando em&l {tempo_entre_duelos} segundos'
+  - ''
+
+mostrar-infos:
+  - '&a&lSTONE FIGHT &7- &7(Comandos)'
+  - ''
+  - '&fParticipantes:&7 {numero_de_participantes}'
+  - '&fDuelos restantes:&7 {lutas_restantes}'
+  - ''
+
+# {tempo} retorna o tempo até fechar o evento
+# {numero_de_participantes} retorna o numero de jogadores
+# {max_players} retorna o limite de players no evento
+broadcast:
+  start:
+    - ''
+    - ' &e&lEVENTO FIGHT'
+    - ''
+    - ' &e-> Para entrar use: &6/fight participar'
+    - ' &eRecompensa: &6&l$&65.000.000 moedas'
+    - ' &etempo restante: &f{tempo} segundos'
+    - ''
+  enter-closed:
+    - ''
+    - '&6&l[FIGHT] &eA entrada para o evento foi fechada.'
+    - ' &6-> &eParticipantes:&f {numero_de_participantes}/{max_players}'
+    - ''
+  force-stop:
+    - ''
+    - '&6&l[FIGHT] &cO evento foi finalizado por um ADMINISTRADOR.'
+    - ''
+  vencedor:
+    - ' &e&lEVENTO FIGHT'
+    - ''
+    - ' &e-> O evento &lfight&e foi finalizado!'
+    - ' &eO vencedor foi&f {vencedor}'
+    - ' &eRecompensa: &6&l$&65.000.000 moedas'
+    - ''
+  ambos-quitaram:
+    - ''
+    - '       &6&lO evento Fight foi finalizado!'
+    - '  &cAmbos os jogadores do duelo desconectaram do evento.'
+    - '       &cNão houveram vencedores.'
+    - ''
+  sem-player:
+    - ''
+    - '       &6&lO evento Fight foi cancelado!'
+    - '  &cNão houveram jogadores o suficiente no evento.'
+    - '       &cNão houve um vencedor!'
+    - ''
+  quitar-durante-duelo:
+    - '&6&l[FIGHT] &cUm dos jogadores se desconectou durante o duelo.'
+  oponenteX-venceu:
+    - ''
+    - '&6&l[FIGHT] &a{oponenteX} venceu a luta contra {oponenteY}'
+    - ''
+  oponenteY-venceu:
+    - ''
+    - '&6&l[FIGHT] &a{oponenteY} venceu a luta contra {oponenteX}'
+    - ''
+  deathmatch-morte:
+    - ''
+    - '&6&l[FIGHT] &e{oponenteX} &ce&e {oponenteY} &cforam eliminados pelo Death-Match.'
+    - ''
+  
+    

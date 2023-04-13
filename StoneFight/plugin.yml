@@ -1,0 +1,5 @@
+name: StoneFight
+version: 1.0
+main: me.zsnow.stone.fight.Main
+commands:
+  fight:
