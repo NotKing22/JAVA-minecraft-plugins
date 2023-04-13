@@ -1,0 +1,32 @@
+name: WeathUtils
+version: 1.0
+author: [zSnowReach]
+main: me.zsnow.redestone.utils.Main
+commands:
+  discord:
+    aliases: [dc]  
+  report:
+    aliases: [reportar]
+  Lixeira:
+    aliases: [lixo]
+  obrigar:    
+  tphere:
+  gm3:
+  valores:
+  lercc:
+  regras:  
+  editaritem:
+    aliases: [ei]
+  tptoggle: 
+  tp: 
+  head:
+  btp:
+  chapeu:
+    aliases: [hat]
+  esconder:
+  aparecer:   
+  compararip:  
+  aglist:
+  btpblacklist:
+    aliases: [blacklistbtp]
+  agmoblist:

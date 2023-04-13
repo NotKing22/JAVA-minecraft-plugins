@@ -1,0 +1,15 @@
+# Configurações:
+
+#Mundo em que o /btp é permitido:
+btp-allow-world: 'Plotme'
+
+# Área de divulgação, mensagens do /discord
+msg-discord: '&6* &ePara acessar nosso Discord oficial, &B&lCLIQUE AQUI.'
+submsg-discord: '&eClique para acessar nosso Discord oficial: &bhttps://discord.gg/wjBU42Q.'
+clickevent-discord: 'https://discord.gg/wjBU42Q'
+
+
+btp-blacklist:
+
+
+tptoggle-on:
