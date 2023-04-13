@@ -1,0 +1,89 @@
+#
+#	  ______   ____  _____   ___   ____	  ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|	|_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /	 | |__) | | |	| |	| | / .'   \_|  | |	|   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /	  |  ___/  | |   _| '	' | | |   ____  | |	| |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /	  _| |_	_| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'	 \/  \/	  |_____|  |________| `.__.'	`._____.'|_____||_____|\____| \______.'
+#
+#
+
+############################################################
+#
+#			CRIE UMA PLACA E NA PRIMEIRA LINHA DIGITE:
+#						&9[Evento]
+#
+############################################################
+
+prefix: '&e[&6Round-&l6&e]'
+
+Schematic-file-name: 'round6_parede'
+Schematic-file-name-boneca: 'round6_boneca'
+
+Premio_coins: 10000000
+premio:
+  - 'coins add {vencedor} {recompensa}'
+
+maximo-de-jogadores: 100
+minimo-de-jogadores: 5
+
+Tempo:
+  Entrada: 120
+  Lobby: 5
+  
+Broadcast:
+  Entrada:
+    - ' '
+    - ' &6&l[EVENTO] &eEntrada fecha em: &6&l{tempo} segundos'
+    - ' {prefix} &ePara entrar, use &6&l/R6 entrar'
+    - ' {prefix} &eParticipantes no evento: &6{participantes}&e/&6{max_player}'
+    - ' {prefix} &eRecompensa em coins: &6{moeda_icon} {premio}'
+    - ' '
+  Sem-jogadores:
+    - ' '
+    - ' &6&l[EVENTO] &c&lENTRADA CANCELADO'
+    - ' &cNão houveram jogadores o suficiente no evento.'
+    - ' '
+  Entrada-fechada:
+    - ' '
+    - ' &6&l[EVENTO] &c&lENTRADA FECHADA'
+    - ' {prefix} &eParticipantes no evento: &6{participantes}&e/&6{max_player}'
+    - ' {prefix} &eRecompensa em coins: &6{moeda_icon} {premio}'
+    - ' '
+  Lobby-timer:
+    - ''
+    - '&e&lO jogo começa em &c{tempo_lobby} &esegundos!'
+    - ''
+  Evento-cancelado:
+    - ''
+    - ' &6&l[EVENTO] &eO evento foi encerrado!'
+    - ' &cEvento cancelado por um ADMINISTRADOR.'
+    - ''
+  Evento-acabou:
+    - ''
+    - ' {prefix} &eO evento foi finalizado!'
+    - ' {prefix} &eVencedor: &7{vencedor}'
+    - ' {prefix} &eO ganhador recebeu &6{premio} de coins!'
+    - ''
+  Sem-vencedor:
+    - ' '
+    - ' {prefix} &eO evento foi finalizado!'
+    - ' {prefix} &cNão houveram vencedores...'
+    - ' '
+
+Entrou-evento:
+  - '&a&l________________________________'
+  - ' '
+  - '&e&l                                Round-6'
+  - ' '
+  - '&e&l            Objetivo: Batatinha frita 1... 2... 3...!'
+  - '&e&l        Não ande enquanto o sinal estiver &nvermelho&e.'
+  - '&e&l       O sinal amarelo alerta a chegada do vermelho.'
+  - '&e&l        Chegue no fim e clique na placa para vencer!'
+  - ' '
+  - '&a&l________________________________'
+  
+
+Mensagens:
+  inventario-cheio: '&cEsvazie seu inventário para entrar no evento.'
+  contem-armadura: '&cRetire sua armadura para entrar no evento.'

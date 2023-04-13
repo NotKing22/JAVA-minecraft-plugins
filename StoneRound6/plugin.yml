@@ -1,0 +1,6 @@
+name: StoneRound6
+version: 1.0
+main: me.zsnow.round6.Main
+commands:
+  round6:
+    aliases: [round,batatinha,r6]
