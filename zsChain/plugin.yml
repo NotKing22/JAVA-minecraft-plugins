@@ -1,0 +1,5 @@
+name: zsChain
+version: 1.0
+main: me.zsnow.chain.Main
+commands:
+  chain:
