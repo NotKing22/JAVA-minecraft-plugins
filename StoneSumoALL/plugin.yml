@@ -1,0 +1,5 @@
+name: StoneSumoAll
+version: 1.0
+main: me.zsnow.stone.sumoall.Main
+commands:
+  sumoall:
