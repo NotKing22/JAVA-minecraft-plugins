@@ -1,0 +1,14 @@
+name: MultiEventos
+version: 1.0
+author: [zSnowReach]
+main: me.zsnow.multieventos.Main
+commands:
+  fastwrite:
+  matematica:
+  loteria:
+  multieventos:
+  bolao:
+  fastclick:
+  quiz:
+  desembaralhe:
+    aliases: [desembaralhar]

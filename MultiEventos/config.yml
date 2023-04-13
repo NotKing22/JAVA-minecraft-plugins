@@ -1,0 +1,133 @@
+# MultiEventos versão 1.0
+# Permission: multieventos.admin
+
+# Mensagem de sem permissão
+sem-permissao: '&cVocê precisa do cargo Administrador ou superior para executar este comando.'
+
+# BOLAO
+valor-acumulado-inicial: 5000
+bolao-valor-aposta: 1000
+
+# Tempo de duraçao do evento
+tempo-bolao: 240
+
+
+# FAST-WRITE
+premio-fastwrite: 5000
+
+fastwrite-frases:
+ - 'O poder surge em resposta a uma necessidade, não em resposta a um desejo'
+ - 'Transportai um punhado de terra todos os dias e fareis uma montanha'
+ - 'Eu tenho em minhas mãos os meios e, em meu coração, a vontade'
+ - 'Valores são diferentes para crianças que não sabem o que é a paz e crianças que não viveram a guerra'
+ - 'O trabalho duro supera o talento natural'
+ - 'Se você está vivo pode recomeçar. Ninguém tem o direito de te tirar isso'
+ - 'Enquanto o conceito de vencedor existir, também existirá perdedores'
+ - 'O desejo egoista de querer manter a paz provoca guerras'
+ - 'Se você não tem razão para estar vivo, é o mesmo que estar morto'
+ - 'Viva como se fosse seu último dia, afinal, um dia será mesmo'
+ - 'Se você não se sente a altura, suba até ela'
+ - 'O sol já se foi, agora só nos resta as memórias daquela luz'
+ - 'Se os anjos deram a comida, os demônios deram o tempero'
+ - 'Enquanto umas pessoas choram, outras vendem os lenços que enxugarão as lágrimas'
+ - 'Se você sabe fazer ao menos alguma coisa, então faça! E se torne o mestre nela'
+ - 'O sonho das pessoas... não tem fim'
+ 
+ 
+#Qualquer erro na execucao do comando significa um erro na config abaixo.
+quiz-premio: 5000000
+quiz-faq:
+  '1':
+    P: "O que é, o que é? O 4 disse para o 40."
+    Q: "Passa a bola"
+  '2':
+    P: "O que é, o que é? O nadador faz para bater o recorde"
+    Q: "Nada"
+  '3':
+    P: "O que é, o que é? O bicho que anda com as patas"
+    Q: "O pato"
+  '4':
+    P: "O que é, o que é? Entra na água e não se molha"
+    Q: "A sombra"
+  '5':
+    P: "O que é, o que é? Não tem pé e corre, tem leito e não dorme, quando para morre"
+    Q: "O rio"
+ 
+ 
+# MATEMATICA (  Operadores: Vezes = *  |  Mais = +  |  Divisão = /  |  Subtração = -  |  )
+matematica-premio: 5000
+    
+Calculos:
+  - '10+10'
+  - '40-20'
+  - '100/2'
+  - '10*10'
+  
+
+
+# LOTERIA
+premio-loteria: 5000
+
+# Tempo em segundos
+loteria-sorteio-tempo: 240
+
+# Numero maximo da loteria
+numero-maximo: 200
+
+
+# Fast CLICK
+
+color-default: '&7&l'
+icon-default: ' [X] '
+
+color-correta: '&a&l'
+icon-correto:  ' [X] '
+
+premio-fastclick: 50000
+
+
+# Desembaralhe
+desembaralhe-premio: 5000
+desembaralhe-palavras:
+  - 'Isqueiro'
+  - 'Metal'
+  - 'Frente'
+  - 'Silencioso'
+  - 'Alicate'
+  - 'Tristeza'
+  - 'Egito'
+  - 'Caribe'
+  - 'Bicicleta'
+  - 'Cenoura'
+  - 'Tigela'
+  - 'Garantia'
+  - 'Amargo'
+  - 'Romance'
+  - 'Poesia'
+  - 'Passeio'
+  - 'Harmonia'
+  - 'Carteira'
+  - 'Protesto'
+  - 'Gosto'
+  - 'Brinde'
+  - 'Índia'
+  - 'Pesadelo'
+  - 'Eletricidade'
+  - 'Luta'
+  - 'Prego'
+  - 'Doce'
+  - 'Página'
+  - 'Julgamento'
+  - 'Telescópio'
+  - 'Fruta'
+  - 'Puro'
+  - 'Carvão'
+  - 'Confidencial'
+  - 'Fonte'
+  - 'Stone'
+  - 'Vaqueiro'
+  - 'Trailer'
+  - 'Guia'
+  - 'Perna'
+  - 'Tornado'
+  - 'Cachos'
