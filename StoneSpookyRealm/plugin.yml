@@ -1,0 +1,5 @@
+name: StoneSpookyRealm
+version: 1.0
+main: me.zsnow.spookyrealm.Main
+commands:
+  vilarejo:
