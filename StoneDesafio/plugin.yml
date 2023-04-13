@@ -1,0 +1,5 @@
+name: StoneDesafio
+version: 1.0
+main: me.zsnow.desafioepico.Main
+commands:
+  desafio:
