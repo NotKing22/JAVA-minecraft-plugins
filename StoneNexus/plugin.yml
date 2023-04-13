@@ -1,0 +1,6 @@
+name: StoneNexus
+version: 1.0
+author: [zSnowReach]
+main: me.zsnow.eventnexus.Main
+commands:
+  nexus:
