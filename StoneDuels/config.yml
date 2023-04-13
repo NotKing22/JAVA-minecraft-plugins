@@ -1,0 +1,79 @@
+#
+#	  ______   ____  _____   ___   ____      ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|    |_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /     | |__) | | |    | |    | | / .'   \_|  | |    |   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /      |  ___/  | |   _| '    ' | | |   ____  | |    | |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /      _| |_    _| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'     \/  \/      |_____|  |________| `.__.'    `._____.'|_____||_____|\____| \______.'
+#
+#
+
+#Conexao
+
+host: "localhost"
+port: "3306"
+databaseName: "duelo"
+user: "root"
+password: ""
+
+# CONVITES
+# retorna quem convidou -> $convidado | retorna quem enviou o convite -> $jogador | retorna o tempo que o convite expira -> $tempo
+# retorna o valor do duelo -> $valor
+
+ter-mito-broadcast: True
+mito-broadcast:
+  - ''
+  - '&b&l[MVP] &f$mito &bse tornou o MVP!'
+  - ''
+
+#Mundo que ocorre o x1
+mundo-do-evento: 'Eventos'
+
+# Tempo em segundos
+convite-expira-em: 15
+
+# Custo do duelo
+duelo-custo: 1000
+
+convite-enviado:
+  - '&a[Duelo] Você convidou $convidado para um duelo. Tempo para que o pedido expire: &l$tempo segundos.'
+  
+convite-recebido:
+  - '&a[Duelo] Você recebeu um convite de duelo de $jogador. Tempo para que o pedido expire: &l$tempo segundos.'
+  - ' &aUse: &l/duelo aceitar &aou &a&l/duelo recusar&a. &6(custo de $$valor)'
+  
+has-duelo-broadcast: true
+duelo-broadcast:
+ - '&6[Duelo] $jogador convidou $convidado para um duelo. O convite se expira em&l $tempo segundos.'
+ 
+#on e off é bloqueado por ser multiarena, ou seja, varios jogadores na mesma arena e voce so enxerga sua dupla
+comandos-bloqueados:
+  - 'on'
+  - 'off'
+  - 'duelo'
+  
+# $perdedor & $vencedor
+
+venceu-broadcast:
+  - '&3[Duelo] &a$vencedor &3venceu o duelo contra &c$perdedor&3.'
+  
+# 
+#		███████ ██    ██ ███    ███  ██████      ██████  ██    ██ ██████  
+#		██      ██    ██ ████  ████ ██    ██     ██   ██ ██    ██ ██   ██ 
+#		███████ ██    ██ ██ ████ ██ ██    ██     ██████  ██    ██ ██████  
+#		     ██ ██    ██ ██  ██  ██ ██    ██     ██       ██  ██  ██      
+#		███████  ██████  ██      ██  ██████      ██        ████   ██   
+#
+
+has-sumo-broadcast: false
+sumo-duelo-broadcast:
+ - "&b&l[SUMO-X1]&f $jogador &3convidou&f $convidado &3para um X1."
+ 
+convite-enviado-sumo:
+  - "&b[SUMO-X1] &aConvite enviado para&f $convidado"
+    
+convite-recebido-sumo:
+  - " "
+  - "&b&l[SUMO-X1] &f$jogador &edesafiou você para um X1. O convite expira em &f&l$tempo segundos"
+  - "&e&lINFO:&7 Arena: &f$arena &7KB: &f$kb &7Efeitos: &f$pot"
+  - " &b➟ &7Use: &f&l/duelo aceitar &7ou &f&l/duelo recusar"

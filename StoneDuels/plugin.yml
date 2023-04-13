@@ -1,0 +1,8 @@
+name: StoneDuels
+version: 1.0
+main: me.zsnow.redestone.Main
+commands:
+  duelo:
+    aliases: [x1, duelos]
+  mito:
+    aliases: [mitodopvp, mitopvp, mvp]
