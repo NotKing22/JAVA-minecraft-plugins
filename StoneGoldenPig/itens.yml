@@ -1,0 +1,37 @@
+
+Itens:
+  espada:
+    Material: 'DIAMOND_SWORD'
+    ID: 276
+    Amount: 1
+    Displayname: '&cEspada lendária'
+    Lore:
+      - ''
+      - '&5&lLEGENDARY SWORD'
+      - ''
+    Enchantments:
+      - 'DAMAGE_ALL:2'
+      - 'LOOT_BONUS_MOBS:3'
+    Give-item: True
+    Usar-comando: True
+    Comandos:
+      - 'say You received legendary sword $player'
+    Lance-inicial: 1000000
+  #
+  picareta:
+    Material: 'DIAMOND_PICKAXE'
+    ID: 278
+    Amount: 1
+    Displayname: '&cPicareta rara'
+    Lore:
+      - ''
+      - '&c&lRARE PICKAXE'
+      - ''
+    Enchantments:
+      - 'DIG_SPEED:7'
+      - 'LOOT_BONUS_BLOCKS:4'
+    Give-item: True
+    Usar-comando: False
+    Comandos:
+      - 'say You received rare pickaxe $player'
+    Lance-inicial: 2000000

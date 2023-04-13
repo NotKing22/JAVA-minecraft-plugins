@@ -1,0 +1,7 @@
+name: StoneGoldenPig
+version: 1.0
+main: me.zsnow.stonegoldenpig.Main
+commands:
+  leilao:
+    aliases: [gp,porcodourado]
+  gpcoletar:

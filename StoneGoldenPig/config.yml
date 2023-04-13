@@ -1,0 +1,43 @@
+#
+#	  ______   ____  _____   ___   ____      ____   _______  _____  _____  _____   ______  _____  ____  _____   ______   
+#	.' ____ \ |_   \|_   _|.'   `.|_  _|    |_  _| |_   __ \|_   _||_   _||_   _|.' ___  ||_   _||_   \|_   _|.' ____ \  
+#	| (___ \_|  |   \ | | /  .-.  \ \ \  /\  / /     | |__) | | |    | |    | | / .'   \_|  | |    |   \ | |  | (___ \_| 
+#	 _.____`.   | |\ \| | | |   | |  \ \/  \/ /      |  ___/  | |   _| '    ' | | |   ____  | |    | |\ \| |   _.____`.  
+#	| \____) | _| |_\   |_\  `-'  /   \  /\  /      _| |_    _| |__/ |\ \__/ /  \ `.___]  |_| |_  _| |_\   |_ | \____) | 
+#	 \______.'|_____|\____|`.___.'     \/  \/      |_____|  |________| `.__.'    `._____.'|_____||_____|\____| \______.'
+#
+#
+
+#segundos
+tempo-sorteio: 300
+Sorteio-final-tempo: 10
+
+Porco-spawn:
+  - ''
+  - '&6&lO PORCO DOURADO APARECEU!'
+  - '&eProcure por ele pelo spawn para participar.'
+  - ''
+
+Play-spawn-sound: True
+Sound-type: 'PIG_IDLE'
+
+#a mensagem que se repetira no chat
+Porco-task-msg:
+  - '&6&lO porco dourado está no spawn com um item novo. Procure-o!'
+  
+#quando acabar o tempo
+Porco-sorteando:
+  - ''
+  - '&6&lO Porco dourado está buscando um vencedor...'
+  - ''
+  
+Porco-sem-participantes:
+  - ''
+  - '&c&lPoucas pessoas acharam o porco dourado. Evento cancelado!'
+  - ''
+  
+Porco-sorteou:
+  - ''
+  - '&a$player ganhou o item do porquinho dourado. Valor pago: R$$valor Coins!'
+  - ''
+  
