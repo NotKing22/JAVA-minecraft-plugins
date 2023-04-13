@@ -1,0 +1,5 @@
+name: StoneEnderGun
+version: 1.0
+main: me.zsnow.stone.endergun.Main
+commands:
+  endergun:
