@@ -41,6 +41,7 @@ import me.zsnow.redestone.itemmethods.ItemBuilder;
 import me.zsnow.redestone.manager.DuelManager;
 import me.zsnow.redestone.manager.InviteManager;
 import me.zsnow.redestone.manager.SumoDuelManager;
+import me.zsnow.redestone.manager.SumoInviteManager;
 import me.zsnow.redestone.mysql.ConexaoSQL;
 import me.zsnow.redestone.mysql.MysqlMethods;
 import net.md_5.bungee.api.ChatColor;
@@ -144,7 +145,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getKB()) {
 						case 0:
-							sumoManager.setKBhash(p, 1);
+						//	sumoManager.setKBhash(p, 1);
 							getDataInfo(p).setKB(getDataInfo(p).getKB()+1);
 							break;
 						case 1:
@@ -158,7 +159,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updateKBselection(getDataInfo(p).getKB()));
-	                sumoManager.setKBhash(p, getDataInfo(p).getKB());
+	              //  sumoManager.setKBhash(p, getDataInfo(p).getKB());
 	                p.updateInventory();
 	                return;
                 }
@@ -166,7 +167,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getPotLvl()) {
 						case 0:
-							sumoManager.setPothash(p, 1);
+						//	sumoManager.setPothash(p, 1);
 							getDataInfo(p).setPotLvl(getDataInfo(p).getPotLvl()+1);
 							break;
 						case 1:
@@ -180,7 +181,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updatePotselection(getDataInfo(p).getPotLvl()));
-	                sumoManager.setPothash(p, getDataInfo(p).getPotLvl());
+	               // sumoManager.setPothash(p, getDataInfo(p).getPotLvl());
 	                p.updateInventory();
 	                return;
                 }
@@ -188,7 +189,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getArena()) {
 						case 0:
-							sumoManager.setArenaHash(p, 1);
+							//sumoManager.setArenaHash(p, 1);
 							getDataInfo(p).setArena(getDataInfo(p).getArena()+1);
 							break;
 						case 1:
@@ -199,7 +200,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updateArenaSelection(getDataInfo(p).getArena()));
-	                sumoManager.setArenaHash(p, getDataInfo(p).getArena());
+	                //sumoManager.setArenaHash(p, getDataInfo(p).getArena());
 	                p.updateInventory();
 	                return;
                 }
@@ -251,6 +252,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     @EventHandler
     public void onSendNickname(AsyncPlayerChatEvent e) {
         InviteManager invite = InviteManager.getInstance();
+        SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
         final Player p = e.getPlayer();
         if (chatEventPvP.contains(p)) {
             e.setCancelled(true);
@@ -316,7 +318,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
             chatEventPvP.remove(p);
         }
         if (chatEventSumo.contains(p)) {
-        	 SumoDuelManager sumoManager = SumoDuelManager.getInstance();
             e.setCancelled(true);
             final Player target = Bukkit.getPlayer(e.getMessage());
             if (e.getMessage().equals("cancelar")) {
@@ -327,17 +328,15 @@ public class MenuListeners extends ConexaoSQL implements Listener {
             if (DuelManager.getInstance().hasCoin(p)) {
                 if (target != null) {
                     if (target != p) {
-                        if (!invite.hasInvite(target)) {
-                            if (invite.canInvite()) {
-                                invite.sendInviteTo(p, target);
+                        if (!sumoInvite.hasInvite(target)) {
+                            if (sumoInvite.canInvite()) {
+                            	sumoInvite.sendInviteTo(p, target);
 
                                 String jogador = p.getName();
                                 String convidado = target.getName();
-                                String kb = getKbTpe(sumoManager.getKBhash(p)); // null?
-                                String pot = getPotType(sumoManager.getPothash(p)); // null?
-                                String arena = getArenaType(sumoManager.getArenaHash(p));
-                                //String.valueOf(invite.getTempo()
-                                //a e b nulos, C e D vao
+                                String kb = getKbTpe(getDataInfo(p).getKB());
+                                String pot = getPotType(getDataInfo(p).getPotLvl()); 
+                                String arena = getArenaType(getDataInfo(p).getArena());
                                 
                                 NumberFormatAPI formatter = new NumberFormatAPI();
                                 String custo = formatter.formatNumber(DuelManager.getInstance().getCusto());
@@ -372,6 +371,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                                             .replace("$pot", pot)
                                             .replace("$arena", arena)));
                                 }
+                                
                                // invite.startTask();  ADD INVITE DO SUMO
                                 chatEventSumo.remove(p);
                                 return;
@@ -468,11 +468,15 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
     
     public void openKnockbackMenuSelection(Player p) {
-    	SumoDuelManager sumoManager = SumoDuelManager.getInstance();
+    	//SumoDuelManager sumoManager = SumoDuelManager.getInstance();
     	
-    	int kbLevel = sumoManager.getKBhash(p) == null ? 0 : sumoManager.getKBhash(p);
-    	int potLvl = sumoManager.getPothash(p) == null ? 0 : sumoManager.getPothash(p);
-    	int arenaLvl = sumoManager.getArenaHash(p) == null ? 0 : sumoManager.getArenaHash(p);
+    	//int kbLevel = sumoManager.getKBhash(p) == null ? 0 : sumoManager.getKBhash(p);
+    	//int potLvl = sumoManager.getPothash(p) == null ? 0 : sumoManager.getPothash(p);
+    	//int arenaLvl = sumoManager.getArenaHash(p) == null ? 0 : sumoManager.getArenaHash(p);
+    	
+    	int kbLevel = getDataInfo(p) == null ? 0 : getDataInfo(p).getKB();
+    	int potLvl = getDataInfo(p) == null ? 0 : getDataInfo(p).getPotLvl();
+    	int arenaLvl = getDataInfo(p) == null ? 0 : getDataInfo(p).getArena();
     	
     	Inventory inventory = Bukkit.createInventory(null, 3*9, menuSelection);
     	ItemStack vidro = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)0);

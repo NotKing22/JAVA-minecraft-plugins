@@ -1,14 +1,11 @@
 package me.zsnow.redestone.api;
 
-import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import me.zsnow.redestone.config.Configs;
-
-import java.util.Map;
 
 public class LocationAPI {
 
@@ -28,15 +25,23 @@ public class LocationAPI {
         POS1,
         POS2
     }
+    
+    public enum loc_sumo {
+        SUMO_CLASSICA, 
+        SUMO_MEDIA, 
+        SUMO_GRANDE,
+        POS1_SUMO_CLASSICA,
+        POS2_SUMO_CLASSICA,
+        POS1_SUMO_MEDIA,
+        POS2_SUMO_MEDIA,
+        POS1_SUMO_GRANDE,
+        POS2_SUMO_GRANDE
+    }
 
-    private Map<String, Location> locationMap = Maps.newConcurrentMap();
 
-    public String teleportTo(final Player p, location location) {
+    public void teleportTo(final Player p, location location) {
         String local = location.toString();
 
-        Location loc = locationMap.getOrDefault(local, null);
-
-        if (loc == null) {
             double X, Y, Z;
             float Yaw, Pitch;
             X = Configs.locations.getConfig().getDouble(local + ".X");
@@ -46,9 +51,7 @@ public class LocationAPI {
             Pitch = (float) Configs.locations.getConfig().getLong(local + ".Pitch");
             World Mundo = Bukkit.getWorld(Configs.locations.getConfig().getString(local + ".Mundo"));
 
-            loc = new Location(Mundo, X, Y, Z, Yaw, Pitch).add(0.5, 0.0, 0.5);
-            locationMap.put(local, loc);
-        }
+            Location loc = new Location(Mundo, X, Y, Z, Yaw, Pitch).add(0.5, 0.0, 0.5);
 
         switch (location) {
             case ENTRADA:
@@ -78,10 +81,81 @@ public class LocationAPI {
             default:
                 throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
         }
-        return local;
+    }
+    
+    public void sumoTp(final Player p, loc_sumo location) {
+        String local = location.toString();
+
+            double X, Y, Z;
+            float Yaw, Pitch;
+            X = Configs.locations.getConfig().getDouble(local + ".X");
+            Y = Configs.locations.getConfig().getDouble(local + ".Y");
+            Z = Configs.locations.getConfig().getDouble(local + ".Z");
+            Yaw = (float) Configs.locations.getConfig().getLong(local + ".Yaw");
+            Pitch = (float) Configs.locations.getConfig().getLong(local + ".Pitch");
+            World Mundo = Bukkit.getWorld(Configs.locations.getConfig().getString(local + ".Mundo"));
+
+            Location loc = new Location(Mundo, X, Y, Z, Yaw, Pitch).add(0.5, 0.0, 0.5);
+
+        switch (location) {
+            case POS1_SUMO_CLASSICA:
+                local = "POS1_SUMO_CLASSICA";
+                p.teleport(loc);
+                break;
+            case POS2_SUMO_CLASSICA:
+                local = "POS2_SUMO_CLASSICA";
+                p.teleport(loc);
+                break;
+            case POS1_SUMO_MEDIA:
+                local = "POS1_SUMO_MEDIA";
+                p.teleport(loc);
+                break;
+            case POS2_SUMO_MEDIA:
+                local = "POS2_SUMO_MEDIA";
+                p.teleport(loc);
+                break;
+            case POS1_SUMO_GRANDE:
+                local = "POS1_SUMO_GRANDE";
+                p.teleport(loc);
+                break;
+            case POS2_SUMO_GRANDE:
+                local = "POS2_SUMO_GRANDE";
+                p.teleport(loc);
+                break;
+            default:
+                throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
+        }
     }
 
-    public String setLocation(final Player p, location location) {
+   /* public void sendToArena(final Player p, int location) {
+    	String local = "";
+        switch (location) {
+	    	case 0:
+	    		local = "SUMO_CLASSICA";
+	    		break;
+	    	case 1:
+	    		local = "SUMO_MEDIA";
+	    		break;
+	    	case 2:
+	    		local = "SUMO_GRANDE";
+	    		break;
+            default:
+                throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
+        }
+            double X, Y, Z;
+            float Yaw, Pitch;
+            X = Configs.locations.getConfig().getDouble(local + ".X");
+            Y = Configs.locations.getConfig().getDouble(local + ".Y");
+            Z = Configs.locations.getConfig().getDouble(local + ".Z");
+            Yaw = (float) Configs.locations.getConfig().getLong(local + ".Yaw");
+            Pitch = (float) Configs.locations.getConfig().getLong(local + ".Pitch");
+            World Mundo = Bukkit.getWorld(Configs.locations.getConfig().getString(local + ".Mundo"));
+
+            Location loc = new Location(Mundo, X, Y, Z, Yaw, Pitch).add(0.5, 0.0, 0.5);
+            p.teleport(loc);
+    }*/
+    
+    public void setLocation(final Player p, location location) {
         String local = null;
         double x = p.getLocation().getBlockX();
         double y = p.getLocation().getBlockY();
@@ -154,10 +228,6 @@ public class LocationAPI {
             default:
                 throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
         }
-
-        locationMap.remove(local);
-
-        return local;
     }
 	
 	/*public void teleportTo(Player p, String location) {

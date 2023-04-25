@@ -24,14 +24,10 @@ public class SumoDuelManager {
 	public HashMap<Player, Player> duelandoHash = new HashMap<Player, Player>();
 	private ArrayList<Player> duelando = new ArrayList<>();
 	private ArrayList<Player> camarote = new ArrayList<>();
-	private static HashMap<Player, Integer> kbHash = new HashMap<>();
-	private HashMap<Player, Integer> potHash = new HashMap<>();
-	private HashMap<Player, Integer> arenaHash = new HashMap<>();
 	
 	//private int hits, tempo;
 	@SuppressWarnings("unused")
 	private Player p;
-	private int KB = 0, potLvl = 0, arena = 0;
 	private Boolean manutencao = false;
 	
 	public Boolean getManutencaoStatus() {
@@ -50,37 +46,20 @@ public class SumoDuelManager {
 		return duelando;
 	}
 	
-	public Integer setKBhash(Player p, int kb) {
-		return kbHash.put(p, kb);
-	}
-	
-	public Integer setPothash(Player p, int lvl) {
-		return potHash.put(p, lvl);
-	}
-	
-	public Integer setArenaHash(Player p, int arena) {
-		return arenaHash.put(p, arena);
-	}
-	
-	public Integer getKBhash(Player p) {
-		return kbHash.get(p) == null ? kbHash.put(p, 0) : kbHash.get(p);
-	}
-	
-	public  Integer getPothash(Player p) {
-		return potHash.get(p) == null ? potHash.put(p, 0) : potHash.get(p);
-	}
-	
-	public Integer getArenaHash(Player p) {
-		return arenaHash.get(p) == null ? arenaHash.put(p, 0) : arenaHash.get(p);
-	}
-	
 	
 	public static Map<UUID, SumoDuelManager> playerData = new HashMap<>();
 	 
+	@SuppressWarnings("unused")
+	private int KB = 0, potLvl = 0, arena = 0, hits = 0, wrong_hits = 0;
+	private boolean magic_Water;
+	
 	public SumoDuelManager() {
 		this.KB = 0;
 		this.potLvl = 0;
 		this.arena = 0;
+		this.hits = 0;
+		this.wrong_hits = 0;
+		this.magic_Water = false;
 	}
 	
 	public int getKB() {
@@ -105,6 +84,47 @@ public class SumoDuelManager {
 	
 	public void setArena(int arena) {
 		this.arena = arena;
+	}
+	
+	public void computeHits() {
+		this.hits++;
+	}
+	
+	public void computeWrongHits() {
+		this.wrong_hits++;
+	}
+	
+	public void unComputeWrongHits() {
+		if (this.wrong_hits > 0)
+		this.wrong_hits--;
+	}
+	
+	public int getHits() {
+		return this.hits;
+	}
+	
+	public int getWrongHits() {
+		return this.wrong_hits;
+	}
+	
+	public boolean getMagicWaterEffect() {
+		return this.magic_Water;
+	}
+	
+	public void setMagicWaterStatus(boolean trueOrFalse) {
+		this.magic_Water = trueOrFalse;
+	}
+	
+	public String getPercentage(int Ataques, int Ataques_errados) {
+	    double porcentagem = ((double) Ataques / (Ataques + Ataques_errados)) * 100;
+
+	    if (porcentagem < 30) {
+	        return "&c" + porcentagem;
+	    } else if (porcentagem < 50) {
+	        return "&e" + porcentagem;
+	    } else {
+	        return "&a" + porcentagem;
+	    }
 	}
 	
 	//public Integer getCusto() {

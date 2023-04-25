@@ -1,13 +1,20 @@
 package me.zsnow.redestone;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import me.zsnow.redestone.api.LocationAPI;
 import me.zsnow.redestone.api.NumberFormatAPI;
@@ -17,6 +24,8 @@ import me.zsnow.redestone.api.SimpleclansAPI;
 import me.zsnow.redestone.listeners.MenuListeners;
 import me.zsnow.redestone.manager.DuelManager;
 import me.zsnow.redestone.manager.InviteManager;
+import me.zsnow.redestone.manager.SumoDuelManager;
+import me.zsnow.redestone.manager.SumoInviteManager;
 import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor {
@@ -61,12 +70,6 @@ public class Commands implements CommandExecutor {
 					Configs.config.saveConfig();
 					Configs.locations.saveConfig();
 					Configs.mito.saveConfig();
-				//	Configs.config.saveDefaultConfig();
-				//	Configs.locations.saveDefaultConfig();
-				//	Configs.mito.saveDefaultConfig();
-					//Configs.config.reloadConfig();
-					//Configs.locations.reloadConfig();
-					//Configs.mito.reloadConfig();
 					p.sendMessage("§cConfigurações recarregadas.");
 					return true;
 				}
@@ -130,6 +133,9 @@ public class Commands implements CommandExecutor {
 					}
 				}
 			}
+			
+			// talvez eu apague esse cmd
+			
 			if (args[0].equalsIgnoreCase("desafiar") || args[0].equalsIgnoreCase("convidar") || args[0].equalsIgnoreCase("invite")) {
 				if (args.length == 2) {
 					if (DuelManager.getInstance().hasCoin(p)) {
@@ -227,6 +233,9 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 			}
+			
+			// arrumar esse cod e adaptar pro sumo
+			
 			if (args[0].equalsIgnoreCase("stopfight") || args[0].equalsIgnoreCase("pararluta") || args[0].equalsIgnoreCase("pararduelo")) {
 				if (p.hasPermission("zs.mod")) {
 					if (args.length < 2) {
@@ -277,6 +286,9 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 			}
+			
+			// add manutençao pro sumo
+			
 			if (args[0].equalsIgnoreCase("manutencao") || args[0].equalsIgnoreCase("manutençao") || args[0].equalsIgnoreCase("manutenção")) {
 				if (p.hasPermission("zs.admin")) {
 					if (args.length < 2) {
@@ -311,41 +323,136 @@ public class Commands implements CommandExecutor {
 				}
 		}
 			// CONVIDOU É OPOSTO DE Y
-		if (args[0].equalsIgnoreCase("aceitar")) { // OU TU COPIA A CLASS INVITE OU TU REFAZ TUDO DESDE O PVP
+		if (args[0].equalsIgnoreCase("aceitar")) { 
 				if (args.length == 1) {
-					if (DuelManager.getInstance().getManutencaoStatus() == false) {
-					if (invite.getConvidou() != p) {
-						if (invite.hasInvite(p)) {
-						if (DuelManager.getInstance().hasCoin(invite.getPlayerX()) && DuelManager.getInstance().hasCoin(invite.getPlayerY())) {
-							invite.getPlayerX().setHealth(20);
-							invite.getPlayerY().setHealth(20);
-						DuelManager.getInstance().paymentToEnter(invite.getPlayerX());
-						DuelManager.getInstance().paymentToEnter(invite.getPlayerY());
-								hideOnEnter(invite.getPlayerX(), invite.getPlayerY());
-						LocationAPI.getLocation().teleportTo(invite.getPlayerX(), location.POS1);
-						LocationAPI.getLocation().teleportTo(invite.getPlayerY(), location.POS2);
-							DuelManager.getInstance().getDuelando().add(invite.getPlayerX());
-							DuelManager.getInstance().getDuelando().add(invite.getPlayerY());
-						DuelManager.getInstance().duelandoHash.put(invite.getPlayerX(), invite.getPlayerY());
-						DuelManager.getInstance().duelandoHash.put(invite.getPlayerY(), invite.getPlayerX());
-							SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerX());
-							SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerY());
-								invite.getConvidou().sendMessage("§a[Duelo] " + invite.getPlayerY().getName() + " §aaceitou seu pedido de duelo.");
-								invite.getPlayerY().sendMessage("§a[Duelo] Você aceitou o pedido de duelo de " + invite.getPlayerX().getName());
-									invite.recuseOrExpireInvite(invite.getPlayerX(), invite.getPlayerY());
-							
-							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
-							return true;
+					if (invite.hasInvite(p)) {
+						if (DuelManager.getInstance().getManutencaoStatus() == false) {
+							if (invite.getConvidou() != p) {
+								if (DuelManager.getInstance().hasCoin(invite.getPlayerX()) && DuelManager.getInstance().hasCoin(invite.getPlayerY())) {
+									invite.getPlayerX().setHealth(20);
+									invite.getPlayerY().setHealth(20);
+								DuelManager.getInstance().paymentToEnter(invite.getPlayerX());
+								DuelManager.getInstance().paymentToEnter(invite.getPlayerY());
+										hideOnEnter(invite.getPlayerX(), invite.getPlayerY());
+								LocationAPI.getLocation().teleportTo(invite.getPlayerX(), location.POS1);
+								LocationAPI.getLocation().teleportTo(invite.getPlayerY(), location.POS2);
+									DuelManager.getInstance().getDuelando().add(invite.getPlayerX());
+									DuelManager.getInstance().getDuelando().add(invite.getPlayerY());
+								DuelManager.getInstance().duelandoHash.put(invite.getPlayerX(), invite.getPlayerY());
+								DuelManager.getInstance().duelandoHash.put(invite.getPlayerY(), invite.getPlayerX());
+									SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerX());
+									SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerY());
+										invite.getConvidou().sendMessage("§a[Duelo] " + invite.getPlayerY().getName() + " §aaceitou seu pedido de duelo.");
+										invite.getPlayerY().sendMessage("§a[Duelo] Você aceitou o pedido de duelo de " + invite.getPlayerX().getName());
+											invite.recuseOrExpireInvite(invite.getPlayerX(), invite.getPlayerY());
+									
+									// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
+									return true;
+								} else {
+									p.sendMessage("§cUm dos jogadores na fila de duelo não tem dinheiro o suficiente para aceitar o convite.");
+									return true;
+								}
 							} else {
-								p.sendMessage("§cUm dos jogadores na fila de duelo não tem dinheiro o suficiente para aceitar o convite.");
-								return true;
-							}
-							} else {
-								p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
+								p.sendMessage("§c[Duelo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
 								return true;
 							}
 						} else {
-							p.sendMessage("§c[Duelo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
+	        			  p.sendMessage("§cO sistema de duelos está em manutenção. Volte novamente mais tarde!");
+	        			  return true;
+						}
+					}
+					if (DuelManager.getInstance().getManutencaoSumoStatus() == false) {
+						SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
+					if (sumoInvite.getConvidou() != p) {
+						if (sumoInvite.hasInvite(p)) {
+							final Player PlayerX = sumoInvite.getPlayerX();
+								final Player PlayerY = sumoInvite.getPlayerY();
+						//			final int arena = getDataInfo(PlayerX).getArena();
+										final int potLvl = getDataInfo(PlayerX).getPotLvl();
+											final int kb = getDataInfo(PlayerX).getKB();
+											PlayerX.setHealth(20);
+											PlayerY.setHealth(20);
+											hideOnEnter(PlayerX, PlayerY);
+					/*		switch (arena) {
+								case 0:
+									p.sendMessage("Arena classica");
+									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_CLASSICA);
+									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_CLASSICA);
+									break;
+								case 1:
+									p.sendMessage("Arena media");
+									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_MEDIA);
+									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_MEDIA);
+									break;
+								case 2:
+									p.sendMessage("Arena grande");
+									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_GRANDE);
+									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_GRANDE);
+									break;
+								default:
+									break;
+							}*/
+							switch (potLvl) {
+								case 0:
+									p.sendMessage("speed 0");
+									break;
+								case 1:
+									p.sendMessage("speed 1");
+									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+									break;
+								case 2:
+									p.sendMessage("speed 2");
+									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+									break;
+								case 3:
+									p.sendMessage("speed 3");
+									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+									break;
+								default:
+									break;
+							}
+							switch (kb) {
+								case 0:
+									p.sendMessage("KB 0");
+									break;
+								case 1:
+									p.sendMessage("KB 1");
+									PlayerX.getInventory().addItem(addKbItem(p, 1));
+									PlayerY.getInventory().addItem(addKbItem(p, 1));
+									break;
+								case 2:
+									p.sendMessage("KB 2");
+									PlayerX.getInventory().addItem(addKbItem(p, 1));
+									PlayerY.getInventory().addItem(addKbItem(p, 1));
+									break;
+								case 3:
+									p.sendMessage("KB 3");
+									PlayerX.getInventory().addItem(addKbItem(p, 3));
+									PlayerY.getInventory().addItem(addKbItem(p, 3));
+									break;
+								default:
+									break;
+						}
+							DuelManager.getInstance().getDuelandoSumo().add(PlayerX);
+							DuelManager.getInstance().getDuelandoSumo().add(PlayerY);
+						DuelManager.getInstance().duelandoHash.put(PlayerX, PlayerY);
+						DuelManager.getInstance().duelandoHash.put(PlayerY, PlayerX);
+							SimpleclansAPI.getAPI().enableClanDamage(PlayerX);
+							SimpleclansAPI.getAPI().enableClanDamage(PlayerY);
+							sumoInvite.getConvidou().sendMessage("§a[Sumo] " + PlayerY.getName() + " §aaceitou seu pedido de duelo.");
+							sumoInvite.getPlayerY().sendMessage("§a[Sumo] Você aceitou o pedido de duelo de " + PlayerX.getName());
+							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
+							
+							// ADD EFEITOS E KB
+							
+							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
+								return true;
+							}
+						} else {
+							p.sendMessage("§c[Sumo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
 							return true;
 							}
 						} else {
@@ -353,7 +460,9 @@ public class Commands implements CommandExecutor {
 	        			  return true;
 						}
 					}
-				}
+				p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
+				return true;
+			}
 			if (args[0].equalsIgnoreCase("recusar")) {
 				if (args.length == 1) {
 					if (invite.getConvidou() != p) {
@@ -395,4 +504,22 @@ public class Commands implements CommandExecutor {
 		player2.showPlayer(player1);
 	}
 	
+	   private SumoDuelManager getDataInfo(Player jogador) {
+	        UUID uuid = jogador.getUniqueId();
+	        SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
+	        if (jogadorInfo == null) {
+	            jogadorInfo = new SumoDuelManager();
+	            SumoDuelManager.playerData.put(uuid, jogadorInfo);
+	        }
+	        return jogadorInfo;
+	    }
+	
+	   private ItemStack addKbItem(Player p, int lvl) {
+		    ItemStack item = new ItemStack(Material.BLAZE_ROD);
+		    ItemMeta meta = item.getItemMeta();
+		    meta.setDisplayName("§aKnockback " + lvl);
+		    item.setItemMeta(meta);
+		    item.addUnsafeEnchantment(Enchantment.KNOCKBACK, lvl);
+		    return item;
+		}
 }

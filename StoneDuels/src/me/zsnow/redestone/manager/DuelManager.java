@@ -21,11 +21,17 @@ public class DuelManager {
 	
 	public HashMap<Player, Player> duelandoHash = new HashMap<Player, Player>();
 	private ArrayList<Player> duelando = new ArrayList<>();
+	private ArrayList<Player> duelandoSumo = new ArrayList<>();
 	private ArrayList<Player> camarote = new ArrayList<>();
 	private Boolean manutencao = false;
+	private Boolean manutencaosumo = false;
 	
 	public Boolean getManutencaoStatus() {
 		return this.manutencao;
+	}
+
+	public Boolean getManutencaoSumoStatus() {
+		return this.manutencaosumo;
 	}
 	
 	public void setManutencaoStatus(boolean booleanValue) {
@@ -38,6 +44,10 @@ public class DuelManager {
 	
 	public ArrayList<Player> getDuelando() {
 		return duelando;
+	}
+	
+	public ArrayList<Player> getDuelandoSumo() {
+		return duelandoSumo;
 	}
 	
 	public Integer getCusto() {
