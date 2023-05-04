@@ -49,7 +49,6 @@ public class SumoDuelManager {
 	
 	public static Map<UUID, SumoDuelManager> playerData = new HashMap<>();
 	 
-	@SuppressWarnings("unused")
 	private int KB = 0, potLvl = 0, arena = 0, hits = 0, wrong_hits = 0;
 	private boolean magic_Water;
 	
@@ -117,15 +116,18 @@ public class SumoDuelManager {
 	
 	public String getPercentage(int Ataques, int Ataques_errados) {
 	    double porcentagem = ((double) Ataques / (Ataques + Ataques_errados)) * 100;
+	    final String porcentagem_format = String.format("%.2f", porcentagem);
 
-	    if (porcentagem < 30) {
-	        return "&c" + porcentagem;
-	    } else if (porcentagem < 50) {
-	        return "&e" + porcentagem;
-	    } else {
-	        return "&a" + porcentagem;
-	    }
-	}
+	    if (Double.isNaN(porcentagem)) {
+	        return "§c00,00%";
+		    } else if (porcentagem < 30) {
+		        return "&c" + porcentagem_format + "%";
+		    } else if (porcentagem < 50) {
+		        return "&e" + porcentagem_format + "%";
+		    } else {
+		        return "&a" + porcentagem_format + "%";
+		    }
+		}
 	
 	//public Integer getCusto() {
 	//	return custo;

@@ -90,8 +90,9 @@ public class SumoInviteManager {
 						sh.cancelTask(contador);
 						return;
 						}
-					if (DuelManager.getInstance().getDuelandoSumo().contains(PlayerInviteX) &&
-							DuelManager.getInstance().getDuelandoSumo().contains(PlayerInviteY)) {
+					SumoDuelManager sumoManager = SumoDuelManager.getInstance();
+					if (sumoManager.getDuelando().contains(PlayerInviteX) &&
+							sumoManager.getDuelando().contains(PlayerInviteY)) {
 						recuseOrExpireInvite(PlayerInviteX, PlayerInviteY);
 						tempo = getTempo();
 						sh.cancelTask(contador);

@@ -36,7 +36,6 @@ convite-expira-em: 15
 duelo-custo: 1000
 
 convite-enviado:
-#  - '&a[Duelo] Você convidou $convidado para um duelo. Tempo para que o pedido expire: &l$tempo segundos.'
   - ' '
   
 convite-recebido:

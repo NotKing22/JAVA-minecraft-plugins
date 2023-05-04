@@ -11,7 +11,6 @@ import me.zsnow.redestone.itemmethods.InventoryUtils;
 import me.zsnow.redestone.manager.DuelManager;
 import me.zsnow.redestone.manager.SumoDuelManager;
 import net.md_5.bungee.api.ChatColor;
-
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -38,6 +37,8 @@ public class DuelListeners implements Listener {
 		// ADICIONAR EVENTO DE QND TOCAR NA AGUA, DPS QUE O EVENTO ACABA VC N MORRE MAIS NA AGUA
 		// TALVEZ POSSA CHECAR ISSO QND VC TIRA O PLAYER DO DUELANDOHASH, VERIFICA SE TA SEM DUPLA SEI LA
 	
+	
+		//QUALQUER BUG DOIDO DE NULL VERIFICAR SE N É O DELETEDATASAVE
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -75,12 +76,14 @@ public class DuelListeners implements Listener {
 								.replace("$vencedor", assassino.getName())
 								.replace("$perdedor", morto.getName()));
 					}
+					deleteDataSaveDuel(morto);
 					(new BukkitRunnable() {
 						@Override
 						public void run() {
 							LocationAPI.getLocation().teleportTo(assassino, location.SAIDA);
 							duel.paymentToWin(assassino);
 							assassino.chat("/on");
+							deleteDataSaveDuel(assassino);
 							cancel();
 						}
 					}).runTaskTimer(Main.getInstance(), 3*20L, 3*20);
@@ -91,17 +94,17 @@ public class DuelListeners implements Listener {
 			}
 			
 			// SUMO CODE
-			
-	if (duel.getDuelandoSumo().contains(morto) && duel.getDuelandoSumo().contains(assassino)) {
-		if (duel.duelandoHash.get(assassino).equals(morto)) {
+		SumoDuelManager sumoManager = SumoDuelManager.getInstance();	
+	if (sumoManager.getDuelando().contains(morto) && sumoManager.getDuelando().contains(assassino)) {
+		if (sumoManager.duelandoHash.get(assassino).equals(morto)) {
 			remover(morto, assassino);
 			e.getDrops().clear();
 			LocationAPI.getLocation().teleportTo(morto, location.SAIDA);
 			morto.chat("/on");
 			
 			String preffix = VaultHook.getPlayerPrefix(assassino.getName()) == null ? "" : VaultHook.getPlayerPrefix(assassino.getName());
-			String killerAccuracy = getPercentage(50, 5); // mudar valores e pegar do getdatainfo
-			String deadAccuracy = getPercentage(10, 13); // mudar valores
+			String killerAccuracy = getPercentage(getDataInfo(assassino).getHits(), getDataInfo(assassino).getWrongHits()); 
+			String deadAccuracy = getPercentage(getDataInfo(morto).getHits(), getDataInfo(morto).getWrongHits()); 
 			
 			/*
 			 * mensagem para o perdedor
@@ -111,7 +114,7 @@ public class DuelListeners implements Listener {
 			morto.sendMessage(" ");
 			morto.sendMessage("                                  §6§lSumo Duelo");
 			morto.sendMessage("             §f" + preffix + " " + assassino.getName() + "§e§l VENCEDOR!  §7" + morto.getName());
-			morto.sendMessage("                " + killerAccuracy + " §7- §f§lApuração de ataques §7- " + deadAccuracy);
+			morto.sendMessage("                " + killerAccuracy + " §7- §f§lTotal de acertos §7- " + deadAccuracy);
 			morto.sendMessage(" ");
 			morto.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 			
@@ -119,6 +122,7 @@ public class DuelListeners implements Listener {
 			 * 
 			 */
 			
+			deleteDataSave(morto);
 			assassino.sendTitle("§a§lVITORIA", "§fVocê venceu §7" + morto.getName());
 			assassino.setAllowFlight(true);
 			assassino.setFlying(true);
@@ -136,11 +140,7 @@ public class DuelListeners implements Listener {
         
 			for (String msg : me.zsnow.redestone.config.Configs.config.getConfig().getStringList("venceu-sumo-broadcast")) {
 				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', msg)
-						.replace("$vencedor", assassino.getName())
-						.replace("$perdedor", morto.getName())
-                        .replace("$kb", kb)
-                        .replace("$pot", pot)
-                        .replace("$arena", arena));
+						.replace("$vencedor", assassino.getName()).replace("$perdedor", morto.getName()).replace("$kb", kb).replace("$pot", pot).replace("$arena", arena));
 			}
 			
 		/*
@@ -159,9 +159,10 @@ public class DuelListeners implements Listener {
 					assassino.sendMessage(" ");
 					assassino.sendMessage("                                  §6§lSumo Duelo");
 					assassino.sendMessage("             §f" + preffix + " " + assassino.getName() + "§e§l VENCEDOR!  §7" + morto.getName());
-					assassino.sendMessage("                " + killerAccuracy + " §7- §f§lApuração de ataques §7- " + deadAccuracy);
+					assassino.sendMessage("                " + killerAccuracy + " §7- §f§lTotal de acertos §7- " + deadAccuracy);
 					assassino.sendMessage(" ");
 					assassino.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+					deleteDataSave(assassino);
 					cancel();
 				}
 			}).runTaskTimer(Main.getInstance(), 2*20L, 2*20);
@@ -185,13 +186,30 @@ public class DuelListeners implements Listener {
 	    }
 	}
 	
+	public void deleteDataSave(Player target) {
+        UUID uuid = target.getUniqueId();
+        SumoDuelManager sumo = SumoDuelManager.getInstance();
+        sumo.duelandoHash.remove(target);
+        sumo.getDuelando().remove(target);
+        SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
+            SumoDuelManager.playerData.put(uuid, jogadorInfo);
+            SumoDuelManager.playerData.remove(uuid);
+	}
+	
+	public void deleteDataSaveDuel(Player target) {
+		DuelManager duel = DuelManager.getInstance();
+		duel.duelandoHash.remove(target);
+		duel.getDuelando().remove(target);
+	}
+	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		DuelManager duel = DuelManager.getInstance();
+		SumoDuelManager sumo = SumoDuelManager.getInstance();
 		DuelCache cache = DuelCache.getCache();
+		final Player morto = e.getPlayer();
 		if (duel.getDuelando().contains(e.getPlayer())) {
-			final Player morto = e.getPlayer();
 			final Player assassino = duel.getMortoBy(morto);
 				if (duel.getDuelando().contains(assassino) && duel.duelandoHash.get(assassino).equals(morto)) {
 					remover(morto, assassino);
@@ -226,18 +244,100 @@ public class DuelListeners implements Listener {
 								.replace("$vencedor", assassino.getName())
 								.replace("$perdedor", morto.getName()));
 					}
+					deleteDataSaveDuel(morto);
 					(new BukkitRunnable() {
 						@Override
 						public void run() {
 							LocationAPI.getLocation().teleportTo(assassino, location.SAIDA);
 							duel.paymentToWin(assassino);
 							assassino.chat("/on");
+							deleteDataSaveDuel(assassino);
 							cancel();
 						}
 					}).runTaskTimer(Main.getInstance(), 3*20L, 3*20);
 				}
+				return;
+			}
+		if (sumo.getDuelando().contains(morto)) {
+			final Player assassino = duel.getMortoBy(morto);
+			if (sumo.getDuelando().contains(morto) && sumo.getDuelando().contains(assassino)) {
+				if (sumo.duelandoHash.get(assassino).equals(morto)) {
+					remover(morto, assassino);
+
+					morto.getInventory().clear();
+					morto.getInventory().setArmorContents(null);
+					
+					LocationAPI.getLocation().teleportTo(morto, location.SAIDA);
+					morto.chat("/on");
+					
+					String preffix = VaultHook.getPlayerPrefix(assassino.getName()) == null ? "" : VaultHook.getPlayerPrefix(assassino.getName());
+					String killerAccuracy = getPercentage(getDataInfo(assassino).getHits(), getDataInfo(assassino).getWrongHits()); 
+					String deadAccuracy = getPercentage(getDataInfo(morto).getHits(), getDataInfo(morto).getWrongHits()); 
+					
+					/*
+					 * mensagem para o perdedor
+					 */
+					
+					morto.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+					morto.sendMessage(" ");
+					morto.sendMessage("                                  §6§lSumo Duelo");
+					morto.sendMessage("             §f" + preffix + " " + assassino.getName() + "§e§l VENCEDOR!  §7" + morto.getName());
+					morto.sendMessage("                " + killerAccuracy + " §7- §f§lTotal de acertos §7- " + deadAccuracy);
+					morto.sendMessage(" ");
+					morto.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+					
+					/*
+					 * 
+					 */
+					
+					assassino.sendTitle("§a§lVITORIA", "§fVocê venceu §7" + morto.getName());
+					assassino.setAllowFlight(true);
+					assassino.setFlying(true);
+					
+					
+				MenuListeners menuSelection = new MenuListeners();
+				String kb = menuSelection.getKbTpe(getDataInfo(assassino).getKB()); 
+		        String pot = menuSelection.getPotType(getDataInfo(assassino).getPotLvl()); 
+		        String arena = menuSelection.getArenaType(getDataInfo(assassino).getArena());
+		        
+		        
+				/*
+				 *  broadcast vitoria
+				 */
+		        
+					for (String msg : me.zsnow.redestone.config.Configs.config.getConfig().getStringList("venceu-sumo-broadcast")) {
+						Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', msg)
+								.replace("$vencedor", assassino.getName()).replace("$perdedor", morto.getName()).replace("$kb", kb).replace("$pot", pot).replace("$arena", arena));
+					}
+					
+				/*
+				 *  delay mensagem e saida 
+				 */
+					deleteDataSaveDuel(morto);
+					(new BukkitRunnable() {
+						@Override
+						public void run() {
+							LocationAPI.getLocation().teleportTo(assassino, location.SAIDA);
+						//	duel.paymentToWin(assassino);
+							assassino.chat("/on");
+							assassino.setAllowFlight(false);
+							assassino.setFlying(false);
+							assassino.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+							assassino.sendMessage(" ");
+							assassino.sendMessage("                                  §6§lSumo Duelo");
+							assassino.sendMessage("             §f" + preffix + " " + assassino.getName() + "§e§l VENCEDOR!  §7" + morto.getName());
+							assassino.sendMessage("                " + killerAccuracy + " §7- §f§lTotal de acertos §7- " + deadAccuracy);
+							assassino.sendMessage(" ");
+							assassino.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+							deleteDataSave(assassino);
+							cancel();
+						}
+					}).runTaskTimer(Main.getInstance(), 2*20L, 2*20);
+					return;
 			}
 		}
+	}
+}
 	
 	 @EventHandler
 	    public void onRespawn(PlayerRespawnEvent event) {
@@ -258,16 +358,15 @@ public class DuelListeners implements Listener {
 	 @EventHandler
 	 public void onEntityDamage(EntityDamageByEntityEvent e) {
 	     DuelManager duel = DuelManager.getInstance();
+	     SumoDuelManager sumoManager = SumoDuelManager.getInstance();	
 	     final Player damager = (Player) e.getDamager();
-	     if (damager instanceof Player && duel.getDuelandoSumo().contains(damager)) {
-	         if (e.getEntity() instanceof LivingEntity) {
+	   // final Player target = (Player) e.getEntity();
+	     if (damager instanceof Player && sumoManager.getDuelando().contains(damager)) {
+	         if (e.getEntity() instanceof Player) {
 	        	 getDataInfo(damager).computeHits();
 	        	 getDataInfo(damager).unComputeWrongHits();
-	             Bukkit.broadcastMessage(" ta hitado chefe " + getDataInfo(damager).getHits());
-	             Bukkit.broadcastMessage("apuraçao " + getPercentage(getDataInfo(damager).getHits(), getDataInfo(damager).getWrongHits()));
 	             return;
-	     }
-	     
+	     } 
 	     if (e.getEntity() instanceof Player && duel.getDuelando().contains(e.getEntity()) && e.getCause() == DamageCause.PROJECTILE) {
 	         e.setCancelled(true);
 	         if (e.getDamager() instanceof Arrow) {
@@ -278,23 +377,19 @@ public class DuelListeners implements Listener {
 	     }
 	     }
 	 }
-	 
 	 @EventHandler
 	 public void interaction(PlayerInteractEvent e) {
-		 DuelManager duel = DuelManager.getInstance();
+		 SumoDuelManager sumoManager = SumoDuelManager.getInstance();	
 		  Player p = e.getPlayer();
 		 Action click  = e.getAction();
 		 
 		 // VERIFICAR SE O TIMER DO PVP TA LIBERADO
-		 if (duel.getDuelandoSumo().contains(e.getPlayer()) &&
-				 (click == Action.LEFT_CLICK_AIR || click == Action.LEFT_CLICK_BLOCK)) {
-			 
-					 getDataInfo(p).computeWrongHits();
-		             Bukkit.broadcastMessage(" errou feiao mane " + getDataInfo(p).getWrongHits());
-		             Bukkit.broadcastMessage("apuraçao " + getPercentage(getDataInfo(p).getHits(), getDataInfo(p).getWrongHits()));
-         }
+		
+		 if (sumoManager.getDuelando().contains(e.getPlayer()) && (click == Action.LEFT_CLICK_AIR || click == Action.LEFT_CLICK_BLOCK)) {
+			 getDataInfo(p).computeWrongHits();
+		 }
 	 }
-	
+	 
 	    @EventHandler
 	    public void PotionsSplash(PotionSplashEvent e){
 	        if(e.getEntity().getShooter() instanceof Player) {
@@ -315,7 +410,7 @@ public class DuelListeners implements Listener {
 	    @EventHandler
 	    public void onDrop(PlayerDropItemEvent e) {
 	    	Player p = e.getPlayer();
-	    	if (DuelManager.getInstance().getDuelando().contains(p)) e.setCancelled(true);
+	    	if (DuelManager.getInstance().getDuelando().contains(p) || SumoDuelManager.getInstance().getDuelando().contains(p)) e.setCancelled(true);
 	    }
 	    
 	    @EventHandler
@@ -324,7 +419,7 @@ public class DuelListeners implements Listener {
 	    	if (DuelManager.getInstance().getDuelando().contains(p)) e.setCancelled(true);
 	    }
     
-    @EventHandler
+     @EventHandler
 	  public void blockCMD(PlayerCommandPreprocessEvent e) {
 		  Player p = e.getPlayer();
 		  if (DuelManager.getInstance().getDuelando().contains(p)) {

@@ -5,10 +5,14 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import com.google.common.collect.Lists;
+
 import me.zsnow.redestone.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,7 +36,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.zsnow.redestone.api.LocationAPI;
+import me.zsnow.redestone.api.LocationAPI.loc_sumo;
 import me.zsnow.redestone.api.LocationAPI.location;
+import me.zsnow.redestone.api.NBTItemStack;
 import me.zsnow.redestone.api.NumberFormatAPI;
 import me.zsnow.redestone.cache.DuelCache;
 import me.zsnow.redestone.config.Configs;
@@ -65,22 +71,26 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     final static String inventory_name = "§b§lDUELO §fDesafie um jogador";
     final static String topmenu_name = "§b§lDUELO §fTop 9 jogadores";
     final static String menuSelection = "§b§lDUELO §fSumo Configurações";
+    final static String duelos_mods_name = "Visualizando duelos | Moderação";
 
     public ArrayList<Player> chatEventPvP = new ArrayList<>();
     public ArrayList<Player> chatEventSumo = new ArrayList<>();
 
-    @SuppressWarnings("unused")
 	@EventHandler
     public void onClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) {
             return;
         }
+        
+        // DEVIA ADAPTAR PARA SWITCH
+        
         Player p = (Player) e.getWhoClicked();
         if (e.getInventory().getTitle().equals(inventory_name) ||
                 e.getInventory().getTitle().equals(topmenu_name) ||
-                e.getInventory().getTitle().equals(storagemenu_name) ||
-                e.getInventory().getTitle().equals(menuSelection)) {
-            e.setCancelled(true);
+            	e.getInventory().getTitle().equals(storagemenu_name) ||
+        		e.getInventory().getTitle().equals(menuSelection) || 
+    			e.getInventory().getTitle().equals(duelos_mods_name)) {
+				e.setCancelled(true);
             //e.setResult(Result.DENY);
            SumoDuelManager sumoManager = SumoDuelManager.getInstance();
             ItemStack currentItem = e.getCurrentItem();
@@ -145,7 +155,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getKB()) {
 						case 0:
-						//	sumoManager.setKBhash(p, 1);
 							getDataInfo(p).setKB(getDataInfo(p).getKB()+1);
 							break;
 						case 1:
@@ -159,7 +168,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updateKBselection(getDataInfo(p).getKB()));
-	              //  sumoManager.setKBhash(p, getDataInfo(p).getKB());
 	                p.updateInventory();
 	                return;
                 }
@@ -167,7 +175,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getPotLvl()) {
 						case 0:
-						//	sumoManager.setPothash(p, 1);
 							getDataInfo(p).setPotLvl(getDataInfo(p).getPotLvl()+1);
 							break;
 						case 1:
@@ -181,7 +188,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updatePotselection(getDataInfo(p).getPotLvl()));
-	               // sumoManager.setPothash(p, getDataInfo(p).getPotLvl());
 	                p.updateInventory();
 	                return;
                 }
@@ -189,7 +195,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getArena()) {
 						case 0:
-							//sumoManager.setArenaHash(p, 1);
 							getDataInfo(p).setArena(getDataInfo(p).getArena()+1);
 							break;
 						case 1:
@@ -200,22 +205,50 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 							break;
 						}
 	                e.getInventory().setItem(e.getSlot(), updateArenaSelection(getDataInfo(p).getArena()));
-	                //sumoManager.setArenaHash(p, getDataInfo(p).getArena());
 	                p.updateInventory();
 	                return;
                 }
 
-                if (currentItem.getItemMeta().getDisplayName().equals(sumoDuelItem_name)) {
-                    	// PRECISA SER INVITEMANAGER DO SUMO
-                            	
-                            	//ADICIONAR AQUI O MENU DE CUSTOMIZAÇAO
-                            	//SE O CARA N TIVER VIP ELE PRECISA CLICAR NO BOTAO DE SKIP
-                            	//NO FIM CHECA DNV SE A FILA TA LIVRE
-                            	//ENVIA O CONVITE E COLOCA A FILA EM ESPERA
-                    	
-                            	openKnockbackMenuSelection(p);
-                            	return;
-                            }
+                if (currentItem.getItemMeta().getDisplayName().equals(sumoDuelItem_name)) {                    	
+                    	openMenuSelection(p);
+                    	return;
+                    }
+                NBTItemStack nbtItemStack = new NBTItemStack(currentItem);
+                if (currentItem.getType() == Material.SKULL_ITEM && nbtItemStack.getString("playername") != null) {
+                	  final Player currentPlayer = Bukkit.getPlayerExact(nbtItemStack.getString("playername"));
+                	  if (currentPlayer == null) {
+                		  p.sendMessage("§cO jogador não se encontra mais online.");
+                		  p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 0.5f);
+                		  openModerarMenu(p);
+                		  return;
+                	  }
+                	  if (!(getDataInfo(currentPlayer).getDuelando().contains(currentPlayer) || DuelManager.getInstance().getDuelando().contains(currentPlayer))) {
+                		  p.sendMessage(" ");
+                		  p.sendMessage("§cEste duelo já terminou!");
+                		  p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 0.5f);
+                		  openModerarMenu(p);
+                		  return;
+                	  }
+                	  if (DuelManager.getInstance().getDuelando().contains(currentPlayer)) {
+                		  LocationAPI.getLocation().teleportTo(p, location.MODERAR);
+                		  return;
+                	  } 											// se n tiver no de cima entao pode rodar o de baixo
+                	  int arena = getDataInfo(currentPlayer).getArena();
+                	  staffHideSumoduel(p, currentPlayer, sumoManager.duelandoHash.get(currentPlayer));
+                	  switch (arena) {
+	                	  case 0:
+								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
+								break;
+							case 1:
+								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
+								break;
+							case 2:
+								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
+								break;
+							default:
+								break;
+						}
+                }
                 if (currentItem.getItemMeta().getDisplayName().equals("§aAvançar")) {
                 	 if (SumoDuelManager.getInstance().getManutencaoStatus() == false) {
                     if (!chatEventSumo.contains(p)) {
@@ -248,6 +281,23 @@ public class MenuListeners extends ConexaoSQL implements Listener {
             }
         }
     }
+    
+	public void staffHidePvPduel(Player staff, Player player1, Player player2) {
+		for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+			staff.hidePlayer(duelandoPlayers);
+		}
+		staff.showPlayer(player1);
+		staff.showPlayer(player2);
+	}
+	
+	public void staffHideSumoduel(Player staff, Player player1, Player player2) {
+		SumoDuelManager sumo = SumoDuelManager.getInstance();
+		for (Player duelandoPlayers : sumo.getDuelando()) {
+			staff.hidePlayer(duelandoPlayers);
+		}
+		staff.showPlayer(player1);
+		staff.showPlayer(player2);
+	}
     
     @EventHandler
     public void onSendNickname(AsyncPlayerChatEvent e) {
@@ -398,7 +448,125 @@ public class MenuListeners extends ConexaoSQL implements Listener {
             chatEventSumo.remove(p);
         }
     }
+    
+    public void openModerarMenu(Player p) {
+        Inventory inventory = Bukkit.createInventory(null, 4*9, "Visualizando duelos | Moderação");
+        SumoDuelManager sumoManager = SumoDuelManager.getInstance();
+        DuelManager duel = DuelManager.getInstance();
+        Set<Player> addedPlayers = new HashSet<>();
+        int slot = 0;
+        inventory.setItem(29, getMap(MapType.X1));inventory.setItem(31, getMap(MapType.SUMO_CLASSICA));inventory.setItem(32, getMap(MapType.SUMO_MEDIA));inventory.setItem(33, getMap(MapType.SUMO_GRANDE));
+	        if (sumoManager.duelandoHash.isEmpty() && duel.duelandoHash.isEmpty()) {
+	            p.openInventory(inventory);
+	            inventory.setItem(13, new ItemBuilder(Material.WEB).displayname("§cVazio").lore(new String[] {"§eNenhum duelo ocorrendo."}).build());
+	            return;
+	        }
+	        for (Entry<Player, Player> entry : sumoManager.duelandoHash.entrySet()) {
+	            Player displayedPlayer = entry.getKey();
+	            Player rival = entry.getValue();
+		            if (addedPlayers.contains(displayedPlayer) || addedPlayers.contains(rival)) {
+		                continue;
+		            }
+		            if (slot >= inventory.getSize() || inventory.getItem(slot) != null) {
+		                break;
+		            }
+            addedPlayers.add(displayedPlayer); addedPlayers.add(rival);
+            
+           final String displayedAccuracy = ChatColor.translateAlternateColorCodes('&', sumoManager.getPercentage(getDataInfo(displayedPlayer).getHits(), getDataInfo(displayedPlayer).getWrongHits())); 
+		   final String rivalAccuracy = ChatColor.translateAlternateColorCodes('&', sumoManager.getPercentage(getDataInfo(rival).getHits(), getDataInfo(rival).getWrongHits())); 
+            
+            ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+            meta.setOwner(displayedPlayer.getName());
+            meta.setDisplayName("§e" + displayedPlayer.getName());
+            meta.setLore(Arrays.asList(new String[]{
+                "§7Está enfrentando: §f" + rival.getName(),
+                "",
+                "§6§lℹ §eDetalhes do duelo:",
+                "",
+                "    §f◆ Arena §7" + getArenaType(getDataInfo(displayedPlayer).getArena()).toUpperCase(),
+                "    §f◆ Efeito §7" + getPotType(getDataInfo(displayedPlayer).getPotLvl()).toUpperCase(),
+                "    §f◆ Repulsão §7" + getKbTpe(getDataInfo(displayedPlayer).getKB()).toUpperCase(),
+                "",
+                "§e⚔ Apuração dos ataques:",
+                "  §f" + displayedPlayer.getName() + ": " + displayedAccuracy,
+                "  §f" + rival.getName() + ": " + rivalAccuracy,
+                "",
+                "§eClique para assistir o duelo!"}));
+            skull.setItemMeta(meta);
+            
+    		NBTItemStack nbtItemStack = new NBTItemStack(skull);
+    		nbtItemStack.setString("playername", displayedPlayer.getName());
+    		
+            inventory.setItem(slot, nbtItemStack.getItem());
+            slot++;
+        } //SUMO CODE
+	        for (Entry<Player, Player> entry : duel.duelandoHash.entrySet()) {
+	            Player displayedPlayer = entry.getKey();
+	            Player rival = entry.getValue();
+		            if (addedPlayers.contains(displayedPlayer) || addedPlayers.contains(rival)) {
+		                continue;
+		            }
+		            if (slot >= inventory.getSize() || inventory.getItem(slot) != null) {
+		                break;
+		            }
+            addedPlayers.add(displayedPlayer); addedPlayers.add(rival);
+            
+            ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+            meta.setOwner(displayedPlayer.getName());
+            meta.setDisplayName("§e" + displayedPlayer.getName());
+            meta.setLore(Arrays.asList(new String[]{
+                "§7Está enfrentando: §f" + rival.getName(),
+                "",
+                "§6§lℹ §eDetalhes do duelo:",
+                "",
+                "    §f◆ Arena §71V1 PvP",
+                "",
+                "§eClique para assistir o duelo!"}));
+            skull.setItemMeta(meta);
+            
+    		NBTItemStack nbtItemStack = new NBTItemStack(skull);
+    		nbtItemStack.setString("playername", displayedPlayer.getName());
+    		
+            inventory.setItem(slot, nbtItemStack.getItem());
+            slot++;
+        }
+	    p.playSound(p.getLocation(), Sound.HORSE_SADDLE, 1.0f, 0.5f);
+        p.openInventory(inventory);
+    }
+    
 
+    enum MapType {
+    	X1,
+        SUMO_CLASSICA, 
+        SUMO_MEDIA, 
+        SUMO_GRANDE
+    }
+    
+    public ItemStack getMap(MapType mapa) {
+    	ItemStack map = null;
+    	switch (mapa) {
+			case X1:
+				map = new ItemBuilder(Material.MAP).glow().displayname("§cArena X1").lore(new String[] {"","§e➢ Ir até"}).build();
+				break;
+			case SUMO_CLASSICA:
+				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo clássica").lore(new String[] {"","§e➢ Ir até"}).build();
+				break;
+			case SUMO_MEDIA:
+				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo média").lore(new String[] {"","§e➢ Ir até"}).build();
+				break;
+			case SUMO_GRANDE:
+				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo grande").lore(new String[] {"","§e➢ Ir até"}).build();
+				break;
+		default:
+			break;
+		}
+    	ItemMeta itemMeta = map.getItemMeta();
+    	itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+    	map.setItemMeta(itemMeta);
+		return map;
+    }
     
    private SumoDuelManager getDataInfo(Player jogador) {
         UUID uuid = jogador.getUniqueId();
@@ -467,12 +635,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
    		return item;
     }
     
-    public void openKnockbackMenuSelection(Player p) {
-    	//SumoDuelManager sumoManager = SumoDuelManager.getInstance();
-    	
-    	//int kbLevel = sumoManager.getKBhash(p) == null ? 0 : sumoManager.getKBhash(p);
-    	//int potLvl = sumoManager.getPothash(p) == null ? 0 : sumoManager.getPothash(p);
-    	//int arenaLvl = sumoManager.getArenaHash(p) == null ? 0 : sumoManager.getArenaHash(p);
+    public void openMenuSelection(Player p) {
     	
     	int kbLevel = getDataInfo(p) == null ? 0 : getDataInfo(p).getKB();
     	int potLvl = getDataInfo(p) == null ? 0 : getDataInfo(p).getPotLvl();
@@ -494,11 +657,14 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     @EventHandler
     public void worldChange(PlayerChangedWorldEvent e) {
         final Player p = e.getPlayer();
+        SumoDuelManager sumo = SumoDuelManager.getInstance();
+        DuelManager duel = DuelManager.getInstance();
         String mundo = Configs.config.getConfig().getString("mundo-do-evento");
-        if (DuelManager.getInstance().getDuelando().contains(p) && DuelManager.getInstance().getManutencaoStatus() == false &&
-                (!p.getWorld().getName().equalsIgnoreCase(mundo))) {
+        if ((duel.getDuelando().contains(p) || sumo.getDuelando().contains(p)) && 
+        		(duel.getManutencaoStatus() == false || sumo.getManutencaoStatus() == false) &&
+                	(!p.getWorld().getName().equalsIgnoreCase(mundo))) {
             LocationAPI.getLocation().teleportTo(p, location.POS1);
-            p.sendMessage("§cVocê não pode teleportar enquanto estiver no evento.");
+            p.sendMessage("§cVocê não pode teleportar enquanto estiver duelando.");
         }
     }
 
@@ -743,8 +909,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         skull.setItemMeta(meta);
         return skull;
     }
-
-
+    
     public static ItemStack getCamaroteItemStack() {
         String url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBjZGExNjcyYWUxNmE1NzUzOGMxNTgxN2FlYjI4MDBkNTQyMzg3MGRlNGQzMGYxOWNkMjRjMjZkMDZmYjM1NSJ9fX0=";
         ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
@@ -763,7 +928,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         headMeta.setLore(Arrays.asList(new String[]{
                 " ",
                 "§7" + barrinha + " §fClique aqui para acessar ou sair",
-                "§7" + barrinha + " §fdo camarote quando quiser.",
+                "§7" + barrinha + " §fdo camarote da arena 1v1 quando quiser.",
                 " "}));
         head.setItemMeta(headMeta);
 

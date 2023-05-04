@@ -18,6 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import me.zsnow.redestone.api.LocationAPI;
 import me.zsnow.redestone.api.NumberFormatAPI;
+import me.zsnow.redestone.api.LocationAPI.loc_sumo;
 import me.zsnow.redestone.api.LocationAPI.location;
 import me.zsnow.redestone.config.Configs;
 import me.zsnow.redestone.api.SimpleclansAPI;
@@ -30,6 +31,9 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor {
 
+	
+	// AO COMEÇAR SETA AS INFO DO DATAINFO DO PLAYER 1 PARA O PLAYER 2 TMB PQ TA FICANDO VAZIO
+	
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -55,7 +59,7 @@ public class Commands implements CommandExecutor {
 						p.sendMessage(" §6§lDUELO §e- §f(Comandos)");
 						p.sendMessage(" ");
 						p.sendMessage(" §f/duelo moderar");
-						p.sendMessage(" §f/duelo set <Entrada, Saida, Moderar, Camarote, pos[1/2]>");;
+						p.sendMessage(" §f/duelo set [X1/SUMO]");;
 						p.sendMessage(" §f/duelo verDuplas <Nick>");
 						p.sendMessage(" §f/duelo pararLuta <Nick>");
 						p.sendMessage(" §c/duelo manutenção <on/off>");
@@ -76,61 +80,113 @@ public class Commands implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("moderar")) {
 				if (p.hasPermission("zs.mod")) {
-					LocationAPI.getLocation().teleportTo(p, location.MODERAR);
-					p.sendMessage("§eEnviado para a área de moderação. Utilize o comando §7'§f/duelo verduplas <nick>§7' §epara assistir apenas um duelo em específico.");
+					MenuListeners menu = new MenuListeners();
+					menu.openModerarMenu(p);
+					p.sendMessage("§eEnviado para a área de moderação. Utilize o comando §7'§f/duelo vertodos§7' §epara ver todos os jogadores.");
 					return true;
 				}
 			}
 
 			if (args[0].equalsIgnoreCase("set")) {
-				if (args.length < 2) {
-					if (p.hasPermission("zs.gerente")) {
-						p.sendMessage("§cUse: /duelo set <Entrada, Saida, Moderar, Camarote, pos[1/2]>");
-						return true;
-					} else {
-						p.sendMessage("§cVocê não tem permissão para executar este comando.");
+				if (p.hasPermission("zs.gerente")) {
+					if (args.length == 2) {
+						if (args[1].equalsIgnoreCase("X1")) {
+							p.sendMessage("§cUse: /duelo set [X1] <Entrada, Saida, Moderar, Camarote, pos[1/2]>");
+							return true;
+						}
+						if (args[1].equalsIgnoreCase("SUMO")) {
+							p.sendMessage("§cUse: /duelo set [Sumo] <SUMO_CLASSICA, SUMO_PEQUENA, SUMO_GRANDE, POS1_SUMO_CLASSICA, POS2_SUMO_CLASSICA, POS1_SUMO_PEQUENA, POS2_SUMO_PEQUENA>, POS1_SUMO_GRANDE, POS2_SUMO_GRANDE>");
+							return true;
+						}
+					}
+					if (args.length < 3) {
+							p.sendMessage("§cUse: /duelo set [X1/SUMO] <argumentos>");
+							return true;
+					} 
+				if (args.length == 3) {
+						if (args[1].equalsIgnoreCase("X1")) {
+							final String local = args[2].toUpperCase();
+							switch (local) {
+								case "ENTRADA":
+									LocationAPI.getLocation().setLocation(p, location.ENTRADA);
+									p.sendMessage("§eA área de Entrada foi definida com sucesso!");
+									break;
+								case "SAIDA":
+									LocationAPI.getLocation().setLocation(p, location.SAIDA);
+									p.sendMessage("§eA área de Saida foi definida com sucesso!");
+									break;
+								case "MODERAR":
+									LocationAPI.getLocation().setLocation(p, location.MODERAR);
+									p.sendMessage("§eA área de moderação foi definida com sucesso!");
+									break;
+								case "CAMAROTE":
+									LocationAPI.getLocation().setLocation(p, location.CAMAROTE);
+									p.sendMessage("§eA área de Camarote foi definida com sucesso!");
+									break;
+								case "POS1":
+									LocationAPI.getLocation().setLocation(p, location.POS1);
+									p.sendMessage("§eA área de pos1 foi definida com sucesso!");
+									break;
+								case "POS2":
+									LocationAPI.getLocation().setLocation(p, location.POS2);
+									p.sendMessage("§eA área de pos2 foi definida com sucesso!");
+									break;
+								
+							default:
+								p.sendMessage("§cUse: /duelo set [X1] <Entrada, Saida, Moderar, Camarote, pos[1/2]>");
+								break;
+							}
+						}
+						if (args[1].equalsIgnoreCase("Sumo")) {
+							final String local = args[2].toUpperCase();
+							switch (local) {
+								case "SUMO_CLASSICA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
+									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
+									break;
+								case "SUMO_PEQUENA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
+									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
+									break;
+								case "SUMO_GRANDE":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
+									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
+									break;
+								case "POS1_SUMO_CLASSICA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_CLASSICA);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+								case "POS2_SUMO_CLASSICA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_CLASSICA);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+								case "POS1_SUMO_PEQUENA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_PEQUENA);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+								case "POS2_SUMO_PEQUENA":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_PEQUENA);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+								case "POS1_SUMO_GRANDE":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_GRANDE);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+								case "POS2_SUMO_GRANDE":
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_GRANDE);
+									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
+									break;
+							default:
+								p.sendMessage("§cUse: /duelo set [Sumo] <SUMO_CLASSICA, SUMO_PEQUENA, SUMO_GRANDE, POS1_SUMO_CLASSICA, POS2_SUMO_CLASSICA, POS1_SUMO_PEQUENA, POS2_SUMO_PEQUENA>, POS1_SUMO_GRANDE, POS2_SUMO_GRANDE>");
+								break;
+							}
+						}
+						p.sendMessage("§cUse: /duelo set [X1/SUMO] <argumentos>");
 						return true;
 					}
-				} 
-				if (args.length == 2) {
-					if (p.hasPermission("zs.gerente")) {
-						if (args[1].equalsIgnoreCase("Entrada")) {
-							LocationAPI.getLocation().setLocation(p, location.ENTRADA);
-							p.sendMessage("§eA área de Entrada foi definida com sucesso!");
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("Saida")) {
-							LocationAPI.getLocation().setLocation(p, location.SAIDA);
-							p.sendMessage("§eA área de Saida foi definida com sucesso!");
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("Moderar")) {
-							LocationAPI.getLocation().setLocation(p, location.MODERAR);
-							p.sendMessage("§eA área de moderação foi definida com sucesso!");
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("Camarote")) {
-							LocationAPI.getLocation().setLocation(p, location.CAMAROTE);
-							p.sendMessage("§eA área de Camarote foi definida com sucesso!");
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("pos1")) {
-							LocationAPI.getLocation().setLocation(p, location.POS1);
-							p.sendMessage("§eA área de pos1 foi definida com sucesso!");
-							return true;
-						}
-						if (args[1].equalsIgnoreCase("pos2")) {
-							LocationAPI.getLocation().setLocation(p, location.POS2);
-							p.sendMessage("§eA área de pos2 foi definida com sucesso!");
-							return true;
-						} else {
-							p.sendMessage("§cUse: /duelo set <Entrada, Saida, Moderar, Camarote, pos[1/2]>");
-							return true;
-						}
-					} else {
-						p.sendMessage("§cVocê não tem permissão para executar este comando.");
-						return true;
-					}
+				} else {
+					p.sendMessage("§cVocê não tem permissão para executar este comando.");
+					return true;
 				}
 			}
 			
@@ -202,8 +258,9 @@ public class Commands implements CommandExecutor {
 					if (args.length == 2) {
 						Player target = Bukkit.getPlayer(args[1]);
 						if (target != null) {
+							SumoDuelManager sumoManager = SumoDuelManager.getInstance();
 							if (DuelManager.getInstance().getDuelando().contains(target)) {
-								for (Entry<Player, Player> duplas : DuelManager.getInstance().duelandoHash.entrySet()) {
+								for (Entry<Player, Player> duplas : sumoManager.duelandoHash.entrySet()) {
 								    Player key = duplas.getKey();
 								    Player value = duplas.getValue();
 								    if (duplas.getKey().getName().equals(target.getName())) {
@@ -368,46 +425,48 @@ public class Commands implements CommandExecutor {
 							final Player PlayerX = sumoInvite.getPlayerX();
 								final Player PlayerY = sumoInvite.getPlayerY();
 						//			final int arena = getDataInfo(PlayerX).getArena();
-										final int potLvl = getDataInfo(PlayerX).getPotLvl();
-											final int kb = getDataInfo(PlayerX).getKB();
+										//final int potLvl = getDataInfo(PlayerX).getPotLvl();
+											//final int kb = getDataInfo(PlayerX).getKB();
+											
+			                                int kb = getDataInfo(invite.getConvidou()).getKB();
+			                                int pot = getDataInfo(invite.getConvidou()).getPotLvl(); 
+			                                int arena = getDataInfo(invite.getConvidou()).getArena();	
+			                                getDataInfo(p).setKB(kb);
+			                                getDataInfo(p).setArena(arena);
+			                                getDataInfo(p).setPotLvl(pot);
+											
 											PlayerX.setHealth(20);
 											PlayerY.setHealth(20);
 											hideOnEnter(PlayerX, PlayerY);
-					/*		switch (arena) {
+											
+							switch (arena) {
 								case 0:
-									p.sendMessage("Arena classica");
 									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_CLASSICA);
 									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_CLASSICA);
 									break;
 								case 1:
-									p.sendMessage("Arena media");
-									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_MEDIA);
-									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_MEDIA);
+									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_PEQUENA);
+									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_PEQUENA);
 									break;
 								case 2:
-									p.sendMessage("Arena grande");
 									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_GRANDE);
 									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_GRANDE);
 									break;
 								default:
 									break;
-							}*/
-							switch (potLvl) {
+							}
+							switch (pot) {
 								case 0:
-									p.sendMessage("speed 0");
 									break;
 								case 1:
-									p.sendMessage("speed 1");
 									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
 									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
 									break;
 								case 2:
-									p.sendMessage("speed 2");
 									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
 									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
 									break;
 								case 3:
-									p.sendMessage("speed 3");
 									PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
 									PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
 									break;
@@ -416,37 +475,32 @@ public class Commands implements CommandExecutor {
 							}
 							switch (kb) {
 								case 0:
-									p.sendMessage("KB 0");
 									break;
 								case 1:
-									p.sendMessage("KB 1");
 									PlayerX.getInventory().addItem(addKbItem(p, 1));
 									PlayerY.getInventory().addItem(addKbItem(p, 1));
 									break;
 								case 2:
-									p.sendMessage("KB 2");
-									PlayerX.getInventory().addItem(addKbItem(p, 1));
-									PlayerY.getInventory().addItem(addKbItem(p, 1));
+									PlayerX.getInventory().addItem(addKbItem(p, 2));
+									PlayerY.getInventory().addItem(addKbItem(p, 2));
 									break;
 								case 3:
-									p.sendMessage("KB 3");
 									PlayerX.getInventory().addItem(addKbItem(p, 3));
 									PlayerY.getInventory().addItem(addKbItem(p, 3));
 									break;
 								default:
 									break;
 						}
-							DuelManager.getInstance().getDuelandoSumo().add(PlayerX);
-							DuelManager.getInstance().getDuelandoSumo().add(PlayerY);
-						DuelManager.getInstance().duelandoHash.put(PlayerX, PlayerY);
-						DuelManager.getInstance().duelandoHash.put(PlayerY, PlayerX);
+							SumoDuelManager sumoManager = SumoDuelManager.getInstance();
+							sumoManager.getDuelando().add(PlayerX);
+							sumoManager.getDuelando().add(PlayerY);
+							sumoManager.duelandoHash.put(PlayerX, PlayerY);
+							sumoManager.duelandoHash.put(PlayerY, PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerY);
 							sumoInvite.getConvidou().sendMessage("§a[Sumo] " + PlayerY.getName() + " §aaceitou seu pedido de duelo.");
 							sumoInvite.getPlayerY().sendMessage("§a[Sumo] Você aceitou o pedido de duelo de " + PlayerX.getName());
 							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
-							
-							// ADD EFEITOS E KB
 							
 							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
 								return true;
@@ -464,13 +518,18 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			if (args[0].equalsIgnoreCase("recusar")) {
+				SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
 				if (args.length == 1) {
+					p.sendMessage("Sintaxe: /duelo recusar <X1 ou Sumo>.");
+					return true;
+				}
+				if (args.length == 2) {
+					if (args[1].equalsIgnoreCase("x1")) {
 					if (invite.getConvidou() != p) {
 						if (invite.hasInvite(p)) {
 							invite.getConvidou().sendMessage("§c[Duelo] " + invite.getPlayerY().getName() + " §crecusou seu pedido de duelo.");
 							invite.getPlayerY().sendMessage("§c[Duelo] Você recusou o pedido de duelo de " + invite.getPlayerX().getName());
 							invite.recuseOrExpireInvite(invite.getPlayerX(), invite.getPlayerY());
-							
 							return true;
 						} else {
 							p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
@@ -481,7 +540,29 @@ public class Commands implements CommandExecutor {
 						return true;
 					}
 				}
+				}
+				// SUMO CODE	
+				if (args[1].equalsIgnoreCase("sumo")) {
+					if (sumoInvite.getConvidou() != p) {
+						if (sumoInvite.hasInvite(p)) {
+							sumoInvite.getConvidou().sendMessage("§c[Sumo] " + sumoInvite.getPlayerY().getName() + " §crecusou seu pedido de duelo.");
+							sumoInvite.getPlayerY().sendMessage("§c[Sumo] Você recusou o pedido de duelo de " + sumoInvite.getPlayerX().getName());
+							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
+							return true;
+						} else {
+							p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
+							return true;
+						}
+					}  else {
+							p.sendMessage("§c[Duelo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
+							return true;
+					}
+				}
+				p.sendMessage("Sintaxe: /duelo recusar <X1 ou Sumo>.");
+				return true;
 			}
+			
+			
 			try {
 				MenuListeners.openMenuPrincipal(p);
 				return true;
@@ -502,6 +583,23 @@ public class Commands implements CommandExecutor {
 		}
 		player1.showPlayer(player2);
 		player2.showPlayer(player1);
+	}
+	
+	public void staffHidePvPduel(Player staff, Player player1, Player player2) {
+		for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+			staff.hidePlayer(duelandoPlayers);
+		}
+		staff.showPlayer(player1);
+		staff.showPlayer(player2);
+	}
+	
+	public void staffHideSumoduel(Player staff, Player player1, Player player2) {
+		SumoDuelManager sumo = SumoDuelManager.getInstance();
+		for (Player duelandoPlayers : sumo.getDuelando()) {
+			staff.hidePlayer(duelandoPlayers);
+		}
+		staff.showPlayer(player1);
+		staff.showPlayer(player2);
 	}
 	
 	   private SumoDuelManager getDataInfo(Player jogador) {

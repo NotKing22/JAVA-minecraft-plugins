@@ -28,12 +28,12 @@ public class LocationAPI {
     
     public enum loc_sumo {
         SUMO_CLASSICA, 
-        SUMO_MEDIA, 
+        SUMO_PEQUENA, 
         SUMO_GRANDE,
         POS1_SUMO_CLASSICA,
         POS2_SUMO_CLASSICA,
-        POS1_SUMO_MEDIA,
-        POS2_SUMO_MEDIA,
+        POS1_SUMO_PEQUENA,
+        POS2_SUMO_PEQUENA,
         POS1_SUMO_GRANDE,
         POS2_SUMO_GRANDE
     }
@@ -106,12 +106,12 @@ public class LocationAPI {
                 local = "POS2_SUMO_CLASSICA";
                 p.teleport(loc);
                 break;
-            case POS1_SUMO_MEDIA:
-                local = "POS1_SUMO_MEDIA";
+            case POS1_SUMO_PEQUENA:
+                local = "POS1_SUMO_PEQUENA";
                 p.teleport(loc);
                 break;
-            case POS2_SUMO_MEDIA:
-                local = "POS2_SUMO_MEDIA";
+            case POS2_SUMO_PEQUENA:
+                local = "POS2_SUMO_PEQUENA";
                 p.teleport(loc);
                 break;
             case POS1_SUMO_GRANDE:
@@ -126,34 +126,6 @@ public class LocationAPI {
                 throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
         }
     }
-
-   /* public void sendToArena(final Player p, int location) {
-    	String local = "";
-        switch (location) {
-	    	case 0:
-	    		local = "SUMO_CLASSICA";
-	    		break;
-	    	case 1:
-	    		local = "SUMO_MEDIA";
-	    		break;
-	    	case 2:
-	    		local = "SUMO_GRANDE";
-	    		break;
-            default:
-                throw new IllegalArgumentException("A localidade informada nao pode ser encontrada: " + local);
-        }
-            double X, Y, Z;
-            float Yaw, Pitch;
-            X = Configs.locations.getConfig().getDouble(local + ".X");
-            Y = Configs.locations.getConfig().getDouble(local + ".Y");
-            Z = Configs.locations.getConfig().getDouble(local + ".Z");
-            Yaw = (float) Configs.locations.getConfig().getLong(local + ".Yaw");
-            Pitch = (float) Configs.locations.getConfig().getLong(local + ".Pitch");
-            World Mundo = Bukkit.getWorld(Configs.locations.getConfig().getString(local + ".Mundo"));
-
-            Location loc = new Location(Mundo, X, Y, Z, Yaw, Pitch).add(0.5, 0.0, 0.5);
-            p.teleport(loc);
-    }*/
     
     public void setLocation(final Player p, location location) {
         String local = null;
