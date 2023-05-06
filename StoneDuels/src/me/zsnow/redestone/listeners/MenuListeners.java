@@ -91,7 +91,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         		e.getInventory().getTitle().equals(menuSelection) || 
     			e.getInventory().getTitle().equals(duelos_mods_name)) {
 				e.setCancelled(true);
-            //e.setResult(Result.DENY);
+				
            SumoDuelManager sumoManager = SumoDuelManager.getInstance();
             ItemStack currentItem = e.getCurrentItem();
             if (currentItem != null && currentItem.hasItemMeta() && currentItem.getItemMeta().hasDisplayName() && currentItem.getItemMeta().hasLore()) {
@@ -215,6 +215,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                     }
                 NBTItemStack nbtItemStack = new NBTItemStack(currentItem);
                 if (currentItem.getType() == Material.SKULL_ITEM && nbtItemStack.getString("playername") != null) {
+                	  DuelManager duel = DuelManager.getInstance();
                 	  final Player currentPlayer = Bukkit.getPlayerExact(nbtItemStack.getString("playername"));
                 	  if (currentPlayer == null) {
                 		  p.sendMessage("§cO jogador não se encontra mais online.");
@@ -222,32 +223,33 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 		  openModerarMenu(p);
                 		  return;
                 	  }
-                	  if (!(getDataInfo(currentPlayer).getDuelando().contains(currentPlayer) || DuelManager.getInstance().getDuelando().contains(currentPlayer))) {
+                	  if (!(getDataInfo(currentPlayer).getDuelando().contains(currentPlayer) || duel.getDuelando().contains(currentPlayer))) {
                 		  p.sendMessage(" ");
                 		  p.sendMessage("§cEste duelo já terminou!");
                 		  p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 0.5f);
                 		  openModerarMenu(p);
                 		  return;
                 	  }
-                	  if (DuelManager.getInstance().getDuelando().contains(currentPlayer)) {
+                	  if (duel.getDuelando().contains(currentPlayer)) {
+                		  staffHidePvPduel(p, currentPlayer, duel.duelandoHash.get(currentPlayer));
                 		  LocationAPI.getLocation().teleportTo(p, location.MODERAR);
                 		  return;
-                	  } 											// se n tiver no de cima entao pode rodar o de baixo
-                	  int arena = getDataInfo(currentPlayer).getArena();
+                	  } 											
+                	  int arenaID = getDataInfo(currentPlayer).getArena();
                 	  staffHideSumoduel(p, currentPlayer, sumoManager.duelandoHash.get(currentPlayer));
-                	  switch (arena) {
-	                	  case 0:
-								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
-								break;
-							case 1:
-								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
-								break;
-							case 2:
-								LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
-								break;
-							default:
-								break;
-						}
+	                	  switch (arenaID) {
+		                	  	case 0:
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
+									break;
+								case 1:
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
+									break;
+								case 2:
+									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
+									break;
+								default:
+									break;
+							}
                 }
                 if (currentItem.getItemMeta().getDisplayName().equals("§aAvançar")) {
                 	 if (SumoDuelManager.getInstance().getManutencaoStatus() == false) {
@@ -669,11 +671,16 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
 
    private static ItemStack getSumoItem() {
-        String status = "§aLivre.";
-        String quantidade = "se pa que sim";
-       // if (DuelManager.getInstance().getManutencaoStatus() == true) {
-       //     status = "§c§lManutenção";
-        //}
+	   SumoInviteManager invite = SumoInviteManager.getInstance();
+	   SumoDuelManager duel = SumoDuelManager.getInstance();
+	   
+       String status = invite.canInvite() == true ? "§aLivre." : "§eEm andamento.";
+       final String quantidade = duel.getDuelando().size() == 0 ? "§cNenhum." : String.valueOf(duel.getDuelando().size() / 2);
+
+       if (duel.getManutencaoStatus() == true) {
+           status = "§c§lManutenção";
+       }
+
     	return new ItemBuilder(Material.LEASH).displayname(sumoDuelItem_name).lore(Arrays.asList(new String[] { 
     			"§fDigite o nome do jogador no chat.", "",
                 "  §6" + barrinha + " §fStatus da fila: " + status,
@@ -1144,6 +1151,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 			}
     	return type;
     }
+    
     
    /* public static ItemStack getArrowUP() {
         String url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFkNGZkZDA5MTg0MGQ5ZTdkZjA2MDE2ODFhZGRlYzYwNTE0ODVhNDg0YmE3ZjUzNmIzNWQ0ZTA1YWE4NmVmOSJ9fX0=";

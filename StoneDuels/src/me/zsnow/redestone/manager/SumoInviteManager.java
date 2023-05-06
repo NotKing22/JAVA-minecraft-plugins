@@ -23,6 +23,7 @@ public class SumoInviteManager {
 	private Player Convidou;
 	private int tempo = Configs.config.getConfig().getInt("convite-expira-em");
 	private Boolean convitesOcupados = false;
+	private Boolean protection;
 	
 	public Player getPlayerX() {
 		return PlayerInviteX;
@@ -67,7 +68,16 @@ public class SumoInviteManager {
 		PlayerInviteY = null;
 		Convidou = null;
 		convitesOcupados = false;
+		setProtection(false);
 		tempo = Configs.config.getConfig().getInt("convite-expira-em");
+	}
+	
+	public boolean getProtectionStatus() {
+		return this.protection;
+	}
+	
+	public void setProtection(boolean trueOrFalse) {
+		this.protection = trueOrFalse;
 	}
 	
 	@SuppressWarnings("deprecation")

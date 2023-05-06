@@ -386,6 +386,7 @@ public class Commands implements CommandExecutor {
 						if (DuelManager.getInstance().getManutencaoStatus() == false) {
 							if (invite.getConvidou() != p) {
 								if (DuelManager.getInstance().hasCoin(invite.getPlayerX()) && DuelManager.getInstance().hasCoin(invite.getPlayerY())) {
+									invite.setProtection(true);
 									invite.getPlayerX().setHealth(20);
 									invite.getPlayerY().setHealth(20);
 								DuelManager.getInstance().paymentToEnter(invite.getPlayerX());
@@ -402,7 +403,6 @@ public class Commands implements CommandExecutor {
 										invite.getConvidou().sendMessage("§a[Duelo] " + invite.getPlayerY().getName() + " §aaceitou seu pedido de duelo.");
 										invite.getPlayerY().sendMessage("§a[Duelo] Você aceitou o pedido de duelo de " + invite.getPlayerX().getName());
 											invite.recuseOrExpireInvite(invite.getPlayerX(), invite.getPlayerY());
-									
 									// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
 									return true;
 								} else {
@@ -423,21 +423,20 @@ public class Commands implements CommandExecutor {
 					if (sumoInvite.getConvidou() != p) {
 						if (sumoInvite.hasInvite(p)) {
 							final Player PlayerX = sumoInvite.getPlayerX();
-								final Player PlayerY = sumoInvite.getPlayerY();
-						//			final int arena = getDataInfo(PlayerX).getArena();
-										//final int potLvl = getDataInfo(PlayerX).getPotLvl();
-											//final int kb = getDataInfo(PlayerX).getKB();
+							final Player PlayerY = sumoInvite.getPlayerY();
+							
+								sumoInvite.getConvidou().sendMessage("§a[Sumo] " + PlayerY.getName() + " §aaceitou seu pedido de duelo.");
+								sumoInvite.getPlayerY().sendMessage("§a[Sumo] Você aceitou o pedido de duelo de " + PlayerX.getName());
 											
-			                                int kb = getDataInfo(invite.getConvidou()).getKB();
-			                                int pot = getDataInfo(invite.getConvidou()).getPotLvl(); 
-			                                int arena = getDataInfo(invite.getConvidou()).getArena();	
-			                                getDataInfo(p).setKB(kb);
-			                                getDataInfo(p).setArena(arena);
-			                                getDataInfo(p).setPotLvl(pot);
-											
-											PlayerX.setHealth(20);
-											PlayerY.setHealth(20);
-											hideOnEnter(PlayerX, PlayerY);
+                                int kb = getDataInfo(PlayerX).getKB();
+                                int pot = getDataInfo(PlayerX).getPotLvl(); 
+                                int arena = getDataInfo(PlayerX).getArena();	
+	                                getDataInfo(p).setKB(kb);
+	                                getDataInfo(p).setArena(arena);
+	                                getDataInfo(p).setPotLvl(pot);
+								PlayerX.setHealth(20);
+								PlayerY.setHealth(20);
+								hideOnEnter(PlayerX, PlayerY);
 											
 							switch (arena) {
 								case 0:
@@ -498,9 +497,9 @@ public class Commands implements CommandExecutor {
 							sumoManager.duelandoHash.put(PlayerY, PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerY);
-							sumoInvite.getConvidou().sendMessage("§a[Sumo] " + PlayerY.getName() + " §aaceitou seu pedido de duelo.");
-							sumoInvite.getPlayerY().sendMessage("§a[Sumo] Você aceitou o pedido de duelo de " + PlayerX.getName());
 							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
+							PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600*20, 0));
+							PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600*20, 0));
 							
 							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
 								return true;
@@ -585,22 +584,6 @@ public class Commands implements CommandExecutor {
 		player2.showPlayer(player1);
 	}
 	
-	public void staffHidePvPduel(Player staff, Player player1, Player player2) {
-		for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
-			staff.hidePlayer(duelandoPlayers);
-		}
-		staff.showPlayer(player1);
-		staff.showPlayer(player2);
-	}
-	
-	public void staffHideSumoduel(Player staff, Player player1, Player player2) {
-		SumoDuelManager sumo = SumoDuelManager.getInstance();
-		for (Player duelandoPlayers : sumo.getDuelando()) {
-			staff.hidePlayer(duelandoPlayers);
-		}
-		staff.showPlayer(player1);
-		staff.showPlayer(player2);
-	}
 	
 	   private SumoDuelManager getDataInfo(Player jogador) {
 	        UUID uuid = jogador.getUniqueId();
