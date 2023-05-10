@@ -286,8 +286,6 @@ public class DuelListeners implements Listener {
     				
         			deleteDataSave(player);
         			deleteDataSave(dupla);
-    				player.getInventory().clear();
-    				player.getInventory().setArmorContents(null);
     				
     				LocationAPI.getLocation().teleportTo(player, location.SAIDA);
     				player.chat("/on");

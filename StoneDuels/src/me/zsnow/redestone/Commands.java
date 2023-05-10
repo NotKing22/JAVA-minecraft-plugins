@@ -23,6 +23,7 @@ import me.zsnow.redestone.api.LocationAPI.loc_sumo;
 import me.zsnow.redestone.api.LocationAPI.location;
 import me.zsnow.redestone.config.Configs;
 import me.zsnow.redestone.api.SimpleclansAPI;
+import me.zsnow.redestone.listeners.DuelListeners;
 import me.zsnow.redestone.listeners.MenuListeners;
 import me.zsnow.redestone.manager.DuelManager;
 import me.zsnow.redestone.manager.InviteManager;
@@ -62,7 +63,8 @@ public class Commands implements CommandExecutor {
 						p.sendMessage(" §f/duelo moderar");
 						p.sendMessage(" §f/duelo set [X1/SUMO]");;
 						p.sendMessage(" §f/duelo verTodos <Nick>");
-						p.sendMessage(" §f/duelo pararLuta <Nick>");
+						p.sendMessage(" §f/duelo verDuplas <Nick>");
+						p.sendMessage(" §c/duelo pararLuta <Nick>");
 						p.sendMessage(" §c/duelo manutenção <on/off>");
 						p.sendMessage(" ");
 						return true;
@@ -73,6 +75,7 @@ public class Commands implements CommandExecutor {
 						p.sendMessage(" ");
 						p.sendMessage(" §f/duelo moderar");
 						p.sendMessage(" §f/duelo verTodos <Nick>");
+						p.sendMessage(" §f/duelo verDuplas <Nick>");
 						p.sendMessage(" ");
 						return true;
 						}
@@ -295,32 +298,67 @@ public class Commands implements CommandExecutor {
 					if (args.length == 2) {
 						Player target = Bukkit.getPlayer(args[1]);
 						if (target != null) {
-							SumoDuelManager sumoManager = SumoDuelManager.getInstance();
-							if (DuelManager.getInstance().getDuelando().contains(target)) {
-								for (Entry<Player, Player> duplas : sumoManager.duelandoHash.entrySet()) {
+							SumoDuelManager sumo = SumoDuelManager.getInstance();
+							DuelManager duel = DuelManager.getInstance();
+							if (duel.getDuelando().contains(target)) {
+									for (Entry<Player, Player> duplas : duel.duelandoHash.entrySet()) {
+									    Player key = duplas.getKey();
+									    Player value = duplas.getValue();
+									    if (duplas.getKey().getName().equals(target.getName())) {
+									    	for (Player duelandoPlayers : duel.getDuelando()) {
+												p.hidePlayer(duelandoPlayers);
+											}
+									    	p.showPlayer(key);
+									    	p.showPlayer(value);
+									    	p.sendMessage("§eVocê agora está assistindo o SUMO entre " + key.getName() + " §ee " + value.getName() + "§e.");
+									    	return true;
+									    }
+									}
+								} 
+							if (sumo.getDuelando().contains(target)) {
+								MenuListeners user = new MenuListeners();
+								for (Entry<Player, Player> duplas : sumo.duelandoHash.entrySet()) {
 								    Player key = duplas.getKey();
 								    Player value = duplas.getValue();
 								    if (duplas.getKey().getName().equals(target.getName())) {
-
-								    	/*for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+								    	for (Player duelandoPlayers : sumo.getDuelando()) {
 											p.hidePlayer(duelandoPlayers);
 										}
-
 								    	p.showPlayer(key);
 								    	p.showPlayer(value);
-
-								    	 */
-								    	p.sendMessage("§aVocê agora está assistindo o duelo entre " + key.getName() + " §ae " + value.getName() + "§a.");
+								    	p.sendMessage("§eVocê agora está assistindo o SUMO entre " + key.getName() + " §ee " + value.getName() + "§e.");
+								    	p.sendMessage(
+								    		"§e§lINFO: §fArena §7" + user.getArenaType(getDataInfo(key).getArena()).toUpperCase() +
+				            				 " §fEfeito §7" + user.getPotType(getDataInfo(key).getPotLvl()).toUpperCase() + 
+				            			     " §fRepulsão §7" + user.getKbTpe(getDataInfo(key).getKB()).toUpperCase());
+								    	
+								    	return true;
 								    }
 								}
-							} else {
-								p.sendMessage("§cEste jogador não está participando de um duelo.");
-								return true;
 							}
+							p.sendMessage("§c" + target.getName() + " §cnão faz parte de nenhum SUMO ou X1.");
+							return true;
 						} else {
 							p.sendMessage("§cO jogador especificado não está online..");
 							return true;
 						}
+					}
+				} else {
+					p.sendMessage("§cVocê não tem permissão para executar este comando.");
+					return true;
+				}
+			}
+			if (args[0].equalsIgnoreCase("vertodos")) {
+				if (p.hasPermission("zs.mod")) {
+					if (args.length == 1) {
+						for (Player duelandoPlayers : SumoDuelManager.getInstance().getDuelando()) {
+							p.showPlayer(duelandoPlayers);
+						}
+				    	for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+							p.showPlayer(duelandoPlayers);
+						}
+				    	p.sendMessage("§eAgora todos os jogadores do X1 e SUMO estão visíveis pra você.");
+						return true;
 					}
 				} else {
 					p.sendMessage("§cVocê não tem permissão para executar este comando.");
@@ -339,24 +377,25 @@ public class Commands implements CommandExecutor {
 					if (args.length == 2) {
 						Player target = Bukkit.getPlayer(args[1]);
 						if (target != null) {
-							if (DuelManager.getInstance().getDuelando().contains(target)) {
-								for (Entry<Player, Player> duplas : DuelManager.getInstance().duelandoHash.entrySet()) {
+							DuelManager duel = DuelManager.getInstance();
+							if (duel.getDuelando().contains(target)) {
+								for (Entry<Player, Player> duplas : duel.duelandoHash.entrySet()) {
 								    Player key = duplas.getKey();
 								    Player value = duplas.getValue();
 								    if (duplas.getKey().getName().equals(target.getName())) {
-								    	DuelManager.getInstance().getDuelando().remove(key);
-								    	DuelManager.getInstance().getDuelando().remove(value);
+								    	duel.getDuelando().remove(key);
+								    	duel.getDuelando().remove(value);
 								    	
 								    	LocationAPI.getLocation().teleportTo(key, location.SAIDA);
-							    		DuelManager.getInstance().moneyBackFor(key);
+							    		duel.moneyBackFor(key);
 							    		SimpleclansAPI.getAPI().disableClanDamage(key);
 							    		
 								    	LocationAPI.getLocation().teleportTo(value, location.SAIDA);
-							    		DuelManager.getInstance().moneyBackFor(value);
+							    		duel.moneyBackFor(value);
 							    		SimpleclansAPI.getAPI().disableClanDamage(value);
 								    	
-							    		DuelManager.getInstance().moneyBackFor(key);
-							    		DuelManager.getInstance().moneyBackFor(value);
+							    		duel.moneyBackFor(key);
+							    		duel.moneyBackFor(value);
 							    		key.chat("/on");
 							    		value.chat("/on");
 							    		key.sendMessage("§cSeu duelo foi encerrado!");
@@ -366,10 +405,30 @@ public class Commands implements CommandExecutor {
 								}
 					    		DuelManager.getInstance().duelandoHash.remove(target, DuelManager.getInstance().getMortoBy(target));
 					    		DuelManager.getInstance().duelandoHash.remove(DuelManager.getInstance().getMortoBy(target), target);
-							} else {
-								p.sendMessage("§cEste jogador não está participando de um duelo.");
-								return true;
+					    		return true;
 							}
+							SumoDuelManager sumo = SumoDuelManager.getInstance();
+							if (sumo.getDuelando().contains(target)) {
+			        			final Player dupla = sumo.duelandoHash.get(target);
+			    				DuelListeners data = new DuelListeners();
+
+			    				target.getInventory().clear();
+			    				target.getInventory().setArmorContents(null);
+			    				
+			    				data.deleteDataSave(target);
+			    				LocationAPI.getLocation().teleportTo(target, location.SAIDA);
+			    				target.chat("/on");
+			    				
+			    				data.deleteDataSave(dupla);
+								LocationAPI.getLocation().teleportTo(dupla, location.SAIDA);
+								dupla.chat("/on");
+					    		target.sendMessage("§cSeu duelo foi encerrado!");
+					    		dupla.sendMessage("§cSeu duelo foi encerrado!");
+						    	p.sendMessage("§aVocê encerrou o duelo entre " + target.getName() + " §ae " + dupla.getName() + "§a.");
+						    	return true;
+							}
+							p.sendMessage("§cEste jogador não está participando de nenhum duelo ou sumo.");
+							return true;
 						} else {
 							p.sendMessage("§cO jogador especificado não está online..");
 							return true;
@@ -385,30 +444,67 @@ public class Commands implements CommandExecutor {
 			
 			if (args[0].equalsIgnoreCase("manutencao") || args[0].equalsIgnoreCase("manutençao") || args[0].equalsIgnoreCase("manutenção")) {
 				if (p.hasPermission("zs.admin")) {
-					if (args.length < 2) {
-						p.sendMessage("§cUse: /duelo manutenção <on/off>");
+					if (args.length < 3) {
+						p.sendMessage("§cUse: /duelo manutenção <on/off> <X1/SUMO>");
 						return true;
 					}
-					if (args.length == 2) {
+					if (args.length == 3) {
 						DuelManager duel = DuelManager.getInstance();
+						SumoDuelManager sumo = SumoDuelManager.getInstance();
+						
 						if (args[1].equalsIgnoreCase("on")) {
-							duel.setManutencaoStatus(true);
-					    	for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
-					    		LocationAPI.getLocation().teleportTo(duelandoPlayers, location.SAIDA);
-					    		duel.moneyBackFor(duelandoPlayers);
-					    		SimpleclansAPI.getAPI().disableClanDamage(duelandoPlayers);
-					    		duelandoPlayers.sendMessage("§cTodos os duelos foram encerrados por um ADMINISTRADOR. Manutenção na arena sendo iniciada!");
-								duelandoPlayers.showPlayer(duelandoPlayers);
+							if (args[2].equalsIgnoreCase("x1")) {
+								duel.setManutencaoStatus(true);
+						    	for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+						    		LocationAPI.getLocation().teleportTo(duelandoPlayers, location.SAIDA);
+						    		duel.moneyBackFor(duelandoPlayers);
+						    		SimpleclansAPI.getAPI().disableClanDamage(duelandoPlayers);
+						    		duelandoPlayers.sendMessage("§cTodos os duelos foram encerrados por um ADMINISTRADOR. Manutenção na arena sendo iniciada!");
+						    		duelandoPlayers.sendMessage("§c§lSe você ainda estiver na arena, chame um STAFF ou relogue do servidor.");
+						    		duelandoPlayers.showPlayer(duelandoPlayers);
+								}
+						    	duel.getDuelando().clear();
+						    	duel.duelandoHash.clear();
+						    	p.sendMessage("§aManutenção no duelo ativada!");
+						    	return true;
 							}
-					    	duel.getDuelando().clear();
-					    	duel.duelandoHash.clear();
-					    	p.sendMessage("§aManutenção no duelo ativada!");
-					    	return true;
+							if (args[2].equalsIgnoreCase("sumo")) {
+								sumo.setManutencaoStatus(true);
+						    	for (Player duelandoPlayers : sumo.getDuelando()) {
+						    		LocationAPI.getLocation().teleportTo(duelandoPlayers, location.SAIDA);
+						    		SimpleclansAPI.getAPI().disableClanDamage(duelandoPlayers);
+						    		duelandoPlayers.sendMessage("§cTodos os duelos foram encerrados por um ADMINISTRADOR. Manutenção na arena sendo iniciada!");
+						    		duelandoPlayers.sendMessage("§c§lSe você ainda estiver na arena, chame um STAFF ou relogue do servidor.");
+						    		duelandoPlayers.showPlayer(duelandoPlayers);
+							        UUID uuid = duelandoPlayers.getUniqueId();
+							        sumo.duelandoHash.remove(duelandoPlayers);
+							        duelandoPlayers.getInventory().clear();
+										for (PotionEffect AllPotionEffects : duelandoPlayers.getActivePotionEffects()) {
+											duelandoPlayers.removePotionEffect(AllPotionEffects.getType());
+										}
+							            SumoDuelManager.playerData.remove(uuid);
+							        	SimpleclansAPI.getAPI().disableClanDamage(duelandoPlayers);
+							        	if (SumoInviteManager.getInstance().savedTimers.get(duelandoPlayers) != null) {
+							        		Bukkit.getScheduler().cancelTask(SumoInviteManager.getInstance().savedTimers.get(duelandoPlayers));
+							        		SumoInviteManager.getInstance().savedTimers.remove(duelandoPlayers);
+							        	}
+								}
+						    	sumo.getDuelando().clear();
+						    	p.sendMessage("§aManutenção no sumo ativada!");
+						    	return true;
+							}
 						}
 						if (args[1].equalsIgnoreCase("off")) {
-							duel.setManutencaoStatus(false);
-							p.sendMessage("§cManutenção no duelo desativada!");
-							return true;
+							if (args[2].equalsIgnoreCase("x1")) {
+								duel.setManutencaoStatus(false);
+								p.sendMessage("§cManutenção no duelo desativada!");
+								return true;
+							}
+							if (args[2].equalsIgnoreCase("sumo")) {
+								sumo.setManutencaoStatus(false);
+								p.sendMessage("§cManutenção no sumo desativada!");
+								return true;
+							}
 						}
 					}
 				} else {
