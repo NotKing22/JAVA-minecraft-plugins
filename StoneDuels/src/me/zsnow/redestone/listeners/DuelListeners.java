@@ -32,6 +32,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class DuelListeners implements Listener {
@@ -162,8 +163,18 @@ public class DuelListeners implements Listener {
 		SumoDuelManager sumo = SumoDuelManager.getInstance();
 		 if(p.getWorld().getName().equals("PlotMe")) return;
 		Location step = p.getLocation().add(0.0D, -1.0D, 0.0D);
-		if (e.getFrom().getX() != e.getTo().getX() && (e.getFrom().getZ() != e.getTo().getZ() && (step.getBlock().getType() == Material.WATER) || 
-					step.getBlock().getType() == Material.STATIONARY_WATER) && getDataInfo(p).getMagicWaterEffect() == true) {
+		if (e.getFrom().getX() != e.getTo().getX() && e.getFrom().getZ() != e.getTo().getZ() && getDataInfo(p) != null) {
+		
+			
+			if ((getDataInfo(p).getUnmove() == true)) {
+				p.teleport(e.getFrom());
+				return;
+			}
+			
+			
+			if ((step.getBlock() != null && (step.getBlock().getType() == Material.WATER || step.getBlock().getType() == Material.STATIONARY_WATER))
+			        && getDataInfo(p).getMagicWaterEffect() == true) {
+				
 			if (sumo.getDuelando().contains(p)) {
 				
 				final Player vencedor = sumo.duelandoHash.get(p);
@@ -228,13 +239,14 @@ public class DuelListeners implements Listener {
 				}
 			}
 		}
+	}
 		
 	public void sendFinalMessage(String preffix, Player recebe_msg, Player vencedor, Player perdedor_name, String killerAccuracy, String deadAccuracy) {
 		recebe_msg.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 		recebe_msg.sendMessage(" ");
 		recebe_msg.sendMessage("                                  §6§lSumo Duelo");
 		recebe_msg.sendMessage("             §f" + preffix + " " + vencedor.getName() + "§e§l VENCEDOR!  §7" + perdedor_name.getName());
-		recebe_msg.sendMessage("                 " + killerAccuracy + " §7- §f§lTotal de acertos §7- " + deadAccuracy);
+		recebe_msg.sendMessage("               " + killerAccuracy + " §7- §f§lApuração de ataques §7- " + deadAccuracy);
 		recebe_msg.sendMessage(" ");
 		recebe_msg.sendMessage("§A§L▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 	}
@@ -245,10 +257,18 @@ public class DuelListeners implements Listener {
         SumoDuelManager sumo = SumoDuelManager.getInstance();
         sumo.duelandoHash.remove(target);
         sumo.getDuelando().remove(target);
-        SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
-            SumoDuelManager.playerData.put(uuid, jogadorInfo);
+       // SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
+       //     SumoDuelManager.playerData.put(uuid, jogadorInfo);
+        	target.getInventory().clear();
+			for (PotionEffect AllPotionEffects : target.getActivePotionEffects()) {
+				target.removePotionEffect(AllPotionEffects.getType());
+			}
             SumoDuelManager.playerData.remove(uuid);
         	SimpleclansAPI.getAPI().disableClanDamage(target);
+        	if (SumoInviteManager.getInstance().savedTimers.get(target) != null) {
+        		Bukkit.getScheduler().cancelTask(SumoInviteManager.getInstance().savedTimers.get(target));
+        		SumoInviteManager.getInstance().savedTimers.remove(target);
+        	}
 	}
 	
     @EventHandler
@@ -438,13 +458,14 @@ public class DuelListeners implements Listener {
 	 public void onEntityDamage(EntityDamageByEntityEvent e) {
 	     DuelManager duel = DuelManager.getInstance();
 	     SumoDuelManager sumoManager = SumoDuelManager.getInstance();	
-	     final Player damager = (Player) e.getDamager();
-	   // final Player target = (Player) e.getEntity();
-	     if (damager instanceof Player && sumoManager.getDuelando().contains(damager)) {
-	         if (e.getEntity() instanceof Player) {
-	        	 getDataInfo(damager).computeHits();
-	        	 getDataInfo(damager).unComputeWrongHits();
-	             return;
+	     if (e.getDamager() instanceof Player) {
+	    	 final Player damager = (Player) e.getDamager();
+		    	if (e.getEntity() instanceof Player && sumoManager.getDuelando().contains(damager) && 
+		    			getDataInfo(damager).getMagicWaterEffect() == true) {
+			        	 getDataInfo(damager).computeHits();
+			        	 getDataInfo(damager).unComputeWrongHits();
+			             return;
+    		 }
 	     } 
 	     if (e.getEntity() instanceof Player && duel.getDuelando().contains(e.getEntity()) && e.getCause() == DamageCause.PROJECTILE) {
 	         e.setCancelled(true);
@@ -454,18 +475,19 @@ public class DuelListeners implements Listener {
 	             shooter.sendMessage("§cVocê não pode atirar projéteis durante os duelos.");
 	         }
 	     }
-	     }
-	 }
+     }
+	 
 	 @EventHandler
 	 public void interaction(PlayerInteractEvent e) {
 		 SumoDuelManager sumoManager = SumoDuelManager.getInstance();	
 		  Player p = e.getPlayer();
 		 Action click  = e.getAction();
 		 
-		 // VERIFICAR SE O TIMER DO PVP TA LIBERADO
+		 // Se getMagicWaterEffect == true então o PvP tá on.
 		
-		 if (sumoManager.getDuelando().contains(e.getPlayer()) && (click == Action.LEFT_CLICK_AIR || click == Action.LEFT_CLICK_BLOCK)) {
-			 getDataInfo(p).computeWrongHits();
+		 if (sumoManager.getDuelando().contains(e.getPlayer()) && 
+			 (click == Action.LEFT_CLICK_AIR || click == Action.LEFT_CLICK_BLOCK) && getDataInfo(p).getMagicWaterEffect() == true) {
+		 		getDataInfo(p).computeWrongHits();
 		 }
 	 }
 	 
@@ -515,8 +537,8 @@ public class DuelListeners implements Listener {
 		DuelManager duel = DuelManager.getInstance();
 		SimpleclansAPI.getAPI().disableClanDamage(p1);
 		SimpleclansAPI.getAPI().disableClanDamage(p2);
-		duel.duelandoHash.remove(p1, p2);
-		duel.duelandoHash.remove(p2, p1);
+		duel.duelandoHash.remove(p1);
+		duel.duelandoHash.remove(p2);
 	duel.getDuelando().remove(p1);
 	duel.getDuelando().remove(p2);
 	}
@@ -528,7 +550,7 @@ public class DuelListeners implements Listener {
 		}
 	}
 	
-	   private SumoDuelManager getDataInfo(Player jogador) {
+	   public SumoDuelManager getDataInfo(Player jogador) {
 	        UUID uuid = jogador.getUniqueId();
 	        SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
 	        if (jogadorInfo == null) {

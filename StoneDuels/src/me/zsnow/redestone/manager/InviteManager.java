@@ -1,5 +1,6 @@
 package me.zsnow.redestone.manager;
 
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,7 +17,8 @@ public class InviteManager {
 		return instance;
 	}
 	
-	private static int contador;
+	private int contador;
+	public int contadorPvP;
 	
 	private Player PlayerInviteX;
 	private Player PlayerInviteY;
@@ -126,6 +128,8 @@ public class InviteManager {
 	public void setProtection(boolean trueOrFalse) {
 		this.protection = trueOrFalse;
 	}
+	
+
 	
 	/*HashMap<Player, Player> invite = new HashMap<>();
 	

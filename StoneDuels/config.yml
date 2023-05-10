@@ -39,8 +39,8 @@ convite-enviado:
   - ' '
   
 convite-recebido:
-  - '&a[Duelo] Você recebeu um convite de duelo de $jogador. Tempo para que o pedido expire: &l$tempo segundos.'
-  - ' &aUse: &l/duelo aceitar &aou &a&l/duelo recusar&a. &6(custo de $$valor)'
+  - '&6[Duelo] Você recebeu um convite de duelo de &e$jogador&6. Tempo para que o pedido expire: &l$tempo segundos.'
+  - ' &e➟ &6Use: &e&l/duelo aceitar X1 &6ou &e&l/duelo recusar X1&6. &lTaxa: $$valor coins!'
   
 has-duelo-broadcast: true
 duelo-broadcast:
@@ -70,13 +70,13 @@ sumo-duelo-broadcast:
  - "&b&l[SUMO-X1]&f $jogador &3convidou&f $convidado &3para um X1."
  
 convite-enviado-sumo:
-  - "&b[SUMO-X1] &aConvite enviado para&f $convidado"
+  - "&b&l[SUMO-X1] &aConvite enviado para&f $convidado"
 
 venceu-sumo-broadcast:
   - '&3[SumoPvP] &a$vencedor &3venceu o duelo contra &c$perdedor&3 na arena $arena.'
     
 convite-recebido-sumo:
   - " "
-  - "&b&l[SUMO-X1] &f$jogador &edesafiou você para um X1. O convite expira em &f&l$tempo segundos"
-  - "&e&lINFO:&7 Arena: &f$arena &7KB: &f$kb &7Efeitos: &f$pot"
-  - " &b➟ &7Use: &f&l/duelo aceitar &7ou &f&l/duelo recusar"
+  - "&b&l[SUMO-X1] &f$jogador &edesafiou você para um sumo."
+  - " &e&lINFO:&7 Arena: &f$arena &7KB: &f$kb &7Efeitos: &f$pot"
+  - " &b➟ &7Use: &f&l/duelo aceitar sumo &7ou &f&l/duelo recusar sumo"

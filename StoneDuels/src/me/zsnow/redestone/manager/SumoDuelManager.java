@@ -50,7 +50,7 @@ public class SumoDuelManager {
 	public static Map<UUID, SumoDuelManager> playerData = new HashMap<>();
 	 
 	private int KB = 0, potLvl = 0, arena = 0, hits = 0, wrong_hits = 0;
-	private boolean magic_Water;
+	private boolean magic_Water, unmove;
 	
 	public SumoDuelManager() {
 		this.KB = 0;
@@ -114,6 +114,14 @@ public class SumoDuelManager {
 		this.magic_Water = trueOrFalse;
 	}
 	
+	public boolean getUnmove() {
+		return this.unmove;
+	}
+	
+	public void setUnmove(boolean trueOrFalse) {
+		this.unmove = trueOrFalse;
+	}
+	
 	public String getPercentage(int Ataques, int Ataques_errados) {
 	    double porcentagem = ((double) Ataques / (Ataques + Ataques_errados)) * 100;
 	    final String porcentagem_format = String.format("%.2f", porcentagem);
@@ -121,11 +129,11 @@ public class SumoDuelManager {
 	    if (Double.isNaN(porcentagem)) {
 	        return "§c00,00%";
 		    } else if (porcentagem < 30) {
-		        return "&c" + porcentagem_format + "%";
+		        return "§c" + porcentagem_format + "%";
 		    } else if (porcentagem < 50) {
-		        return "&e" + porcentagem_format + "%";
+		        return "§e" + porcentagem_format + "%";
 		    } else {
-		        return "&a" + porcentagem_format + "%";
+		        return "§a" + porcentagem_format + "%";
 		    }
 		}
 	
@@ -156,4 +164,14 @@ public class SumoDuelManager {
 	public Player getMortoBy(Player player) {
 		return duelandoHash.get(player);
 	}
+	
+	   public SumoDuelManager getDataInfo(Player jogador) {
+	        UUID uuid = jogador.getUniqueId();
+	        SumoDuelManager jogadorInfo = SumoDuelManager.playerData.get(uuid);
+	        if (jogadorInfo == null) {
+	            jogadorInfo = new SumoDuelManager();
+	            SumoDuelManager.playerData.put(uuid, jogadorInfo);
+	        }
+	        return jogadorInfo;
+	    }
 }

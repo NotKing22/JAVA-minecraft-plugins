@@ -1,11 +1,15 @@
 package me.zsnow.redestone.manager;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import me.zsnow.redestone.Main;
+import me.zsnow.redestone.api.ActionBarAPI;
 import me.zsnow.redestone.config.Configs;
 
 public class SumoInviteManager {
@@ -16,6 +20,8 @@ public class SumoInviteManager {
 		return instance;
 	}
 	
+	public HashMap<Player, Integer> savedTimers = new HashMap<>();
+	
 	private static int contador;
 	
 	private Player PlayerInviteX;
@@ -24,6 +30,9 @@ public class SumoInviteManager {
 	private int tempo = Configs.config.getConfig().getInt("convite-expira-em");
 	private Boolean convitesOcupados = false;
 	private Boolean protection;
+	
+	public int contadorPvP;
+	private int tempoPvP = 6;
 	
 	public Player getPlayerX() {
 		return PlayerInviteX;
@@ -128,6 +137,49 @@ public class SumoInviteManager {
 		}, 20, 20L);
 	}
 	
+	// SUMO
+	@SuppressWarnings("deprecation")
+	public void runPvPTimer(Player playerX, Player playerY) {
+			
+		SumoDuelManager.getInstance().getDataInfo(playerX).setUnmove(true);
+		SumoDuelManager.getInstance().getDataInfo(playerY).setUnmove(true);
+		
+		BukkitScheduler sh = Bukkit.getServer().getScheduler();
+		contadorPvP = sh.scheduleAsyncRepeatingTask(Main.getInstance(), new BukkitRunnable() {
+			
+			int timer = tempoPvP;
+				
+			@Override
+			public void run() {
+				if (timer > 1) {
+					timer--;
+					ActionBarAPI.sendActionBarMessage(playerX, "§b§l" + timer);
+					playerX.playSound(playerX.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
+						
+					ActionBarAPI.sendActionBarMessage(playerY, "§b§l" + timer);
+					playerY.playSound(playerY.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
+					return;
+				}
+				SumoDuelManager.getInstance().getDataInfo(playerX).setMagicWaterStatus(true); 
+				SumoDuelManager.getInstance().getDataInfo(playerY).setMagicWaterStatus(true);
+					
+				ActionBarAPI.sendActionBarMessage(playerX, "§6§lLUTEM!");				
+				ActionBarAPI.sendActionBarMessage(playerY, "§6§lLUTEM!");
+					
+				playerX.playSound(playerX.getLocation(), Sound.ITEM_BREAK, 1.0f, 0.5f);
+				playerY.playSound(playerY.getLocation(), Sound.ITEM_BREAK, 1.0f, 0.5f);
+				sh.cancelTask(savedTimers.get(playerX));
+				sh.cancelTask(savedTimers.get(playerY));
+				savedTimers.remove(playerX);
+				savedTimers.remove(playerY);
+				SumoDuelManager.getInstance().getDataInfo(playerX).setUnmove(false);
+				SumoDuelManager.getInstance().getDataInfo(playerY).setUnmove(false);
+				return;
+			}
+		}, 10, 20L);
+		savedTimers.put(playerX, contadorPvP);
+		savedTimers.put(playerY, contadorPvP);
+	}
 	
 	/*HashMap<Player, Player> invite = new HashMap<>();
 	

@@ -5,8 +5,10 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -29,6 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -54,25 +57,51 @@ import net.md_5.bungee.api.ChatColor;
 
 public class MenuListeners extends ConexaoSQL implements Listener {
 
+    private static final Map<String, String> menu_title = new HashMap<>();
+ 
+    static {
+        menu_title.put("storage_name", "§eArmazém de itens");
+        menu_title.put("leaderboard_name", "§bLeaderboard");
+        menu_title.put("camarote_name", "§eCamarote");
+        menu_title.put("duelItem_name", "§aDesafiar 1v1 PvP!");
+        menu_title.put("sumoDuelItem_name", "§bDesafiar 1v1 Sumo! §e§l(NOVO)");
+        menu_title.put("barrinha", "│");
+        menu_title.put("kbSelection", "§6Customize o KnockBack");
+        menu_title.put("potSelection", "§6Customize os efeitos");
+        menu_title.put("arenaSelection", "§6Escolha a arena");
+        menu_title.put("storagemenu_name", "§b§lDUELO §fSeu armazém");
+        menu_title.put("inventory_name", "§b§lDUELO §fDesafie um jogador");
+        menu_title.put("topmenu_name", "§b§lDUELO §fTop 9 jogadores");
+        menu_title.put("menuSelection", "§b§lDUELO §fSumo Configurações");
+        menu_title.put("duelos_mods_name", "§cVisualizando duelos | ADMIN");
+        menu_title.put("arena_x1", "§dArena X1");
+        menu_title.put("sumo_classica", "§dSumo clássica");
+        menu_title.put("sumo_pequeno", "§dSumo pequeno");
+        menu_title.put("sumo_grande", "§dSumo grande");
+    }
 
-    final static String storage_name = "§eArmazém de itens";
-    final static String leaderboard_name = "§bLeaderboard";
-    final static String camarote_name = "§eCamarote";
-    final static String duelItem_name = "§aDesafiar 1v1 PvP!";
-    final static String sumoDuelItem_name = "§bDesafiar 1v1 Sumo! §e§l(NOVO)";
-    final static String barrinha = "│";
-    final static String kbSelection = "§6Customize o KnockBack";
-    final static String potSelection = "§6Customize os efeitos";
-    final static String arenaSelection = "§6Escolha a arena";
-    //final static String getArrowUP = "§§§b";
-    //final static String getArrowDown = "§§§a";
+    public static String getMenuTitle(String nome) {
+        return menu_title.get(nome);
+    }
 
-    final static String storagemenu_name = "§b§lDUELO §fSeu armazém";
-    final static String inventory_name = "§b§lDUELO §fDesafie um jogador";
-    final static String topmenu_name = "§b§lDUELO §fTop 9 jogadores";
-    final static String menuSelection = "§b§lDUELO §fSumo Configurações";
-    final static String duelos_mods_name = "Visualizando duelos | Moderação";
+    /*final private static String storage_name = "§eArmazém de itens";
+    final private static String leaderboard_name = "§bLeaderboard";
+    final private static String camarote_name = "§eCamarote";
+    final private static String duelItem_name = "§aDesafiar 1v1 PvP!";
+    final private static String sumoDuelItem_name = "§bDesafiar 1v1 Sumo! §e§l(NOVO)";
+    
+    final private static String barrinha = "│";
+    
+    final private static String kbSelection = "§6Customize o KnockBack";
+    final private static String potSelection = "§6Customize os efeitos";
+    final private static String arenaSelection = "§6Escolha a arena";
 
+    final private static String storagemenu_name = "§b§lDUELO §fSeu armazém";
+    final private static String inventory_name = "§b§lDUELO §fDesafie um jogador";
+    final private static String topmenu_name = "§b§lDUELO §fTop 9 jogadores";
+    final private static String menuSelection = "§b§lDUELO §fSumo Configurações";
+    final private static String duelos_mods_name = "Visualizando duelos | Moderação";*/
+    
     public ArrayList<Player> chatEventPvP = new ArrayList<>();
     public ArrayList<Player> chatEventSumo = new ArrayList<>();
 
@@ -85,11 +114,11 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         // DEVIA ADAPTAR PARA SWITCH
         
         Player p = (Player) e.getWhoClicked();
-        if (e.getInventory().getTitle().equals(inventory_name) ||
-                e.getInventory().getTitle().equals(topmenu_name) ||
-            	e.getInventory().getTitle().equals(storagemenu_name) ||
-        		e.getInventory().getTitle().equals(menuSelection) || 
-    			e.getInventory().getTitle().equals(duelos_mods_name)) {
+        if (e.getInventory().getTitle().equals(getMenuTitle("inventory_name")) ||
+                e.getInventory().getTitle().equals(getMenuTitle("topmenu_name")) ||
+            	e.getInventory().getTitle().equals(getMenuTitle("storagemenu_name")) ||
+        		e.getInventory().getTitle().equals(getMenuTitle("menuSelection")) || 
+    			e.getInventory().getTitle().equals(getMenuTitle("duelos_mods_name"))) {
 				e.setCancelled(true);
 				
            SumoDuelManager sumoManager = SumoDuelManager.getInstance();
@@ -109,7 +138,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                     updateStorageMenu(p);
                     return;
                 }
-                if (currentItem.getItemMeta().getDisplayName().equals(camarote_name)) {
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("camarote_name"))) {
                     if (!DuelManager.getInstance().getCamarotePlayers().contains(p)) {
                         LocationAPI.getLocation().teleportTo(p, location.CAMAROTE);
                         DuelManager.getInstance().getCamarotePlayers().add(p);
@@ -122,7 +151,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                         return;
                     }
                 }
-                if (currentItem.getItemMeta().getDisplayName().equals(duelItem_name)) {
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("duelItem_name"))) {
                     if (DuelManager.getInstance().getManutencaoStatus() == false) {
                         if (!chatEventPvP.contains(p)) {
                             if (InviteManager.getInstance().canInvite()) {
@@ -151,7 +180,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                         return;
                     }
                 }
-                if (currentItem.getItemMeta().getDisplayName().equals(kbSelection)) {
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("kbSelection"))) {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getKB()) {
 						case 0:
@@ -171,7 +200,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	                p.updateInventory();
 	                return;
                 }
-                if (currentItem.getItemMeta().getDisplayName().equals(potSelection)) {
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("potSelection"))) {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getPotLvl()) {
 						case 0:
@@ -191,7 +220,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	                p.updateInventory();
 	                return;
                 }
-                if (currentItem.getItemMeta().getDisplayName().equals(arenaSelection)) {
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("arenaSelection"))) {
                 	p.playSound(p.getLocation(), Sound.NOTE_STICKS, 1.0f, 0.5f);
                     switch (getDataInfo(p).getArena()) {
 						case 0:
@@ -209,13 +238,28 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	                return;
                 }
 
-                if (currentItem.getItemMeta().getDisplayName().equals(sumoDuelItem_name)) {                    	
+                if (currentItem.getItemMeta().getDisplayName().equals(getMenuTitle("sumoDuelItem_name"))) {  
+                	PlayerInventory inv = p.getInventory();
+                	for (ItemStack i : inv.getContents()) {
+						if(i != null && !(i.getType() == Material.AIR)) {
+							p.sendMessage("§cEsteja com o inventário vázio antes de convidar um jogador.");
+							p.closeInventory();
+							return;
+						} 
+					} for (ItemStack i : inv.getArmorContents()) {
+						if(i != null && !(i.getType() == Material.AIR)) {
+							p.sendMessage("§cEsteja sem armaduras equipadas antes de convidar um jogador.");
+							p.closeInventory();
+							return;
+						}
+					}
                     	openMenuSelection(p);
                     	return;
                     }
                 NBTItemStack nbtItemStack = new NBTItemStack(currentItem);
                 if (currentItem.getType() == Material.SKULL_ITEM && nbtItemStack.getString("playername") != null) {
                 	  DuelManager duel = DuelManager.getInstance();
+                	  SumoDuelManager sumo = SumoDuelManager.getInstance();
                 	  final Player currentPlayer = Bukkit.getPlayerExact(nbtItemStack.getString("playername"));
                 	  if (currentPlayer == null) {
                 		  p.sendMessage("§cO jogador não se encontra mais online.");
@@ -223,7 +267,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 		  openModerarMenu(p);
                 		  return;
                 	  }
-                	  if (!(getDataInfo(currentPlayer).getDuelando().contains(currentPlayer) || duel.getDuelando().contains(currentPlayer))) {
+                	  if (!(sumo.getDuelando().contains(currentPlayer) || duel.getDuelando().contains(currentPlayer))) {
                 		  p.sendMessage(" ");
                 		  p.sendMessage("§cEste duelo já terminou!");
                 		  p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 0.5f);
@@ -233,10 +277,19 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 	  if (duel.getDuelando().contains(currentPlayer)) {
                 		  staffHidePvPduel(p, currentPlayer, duel.duelandoHash.get(currentPlayer));
                 		  LocationAPI.getLocation().teleportTo(p, location.MODERAR);
+                		  p.sendMessage(" ");
+                		  p.sendMessage("§6⚒ §eVocê está assistindo " + currentPlayer.getName() + " §e " + duel.duelandoHash.get(currentPlayer).getName());
+                		  p.sendMessage("§eNão há informações adicionais.");
                 		  return;
-                	  } 											
+                	  } 	
                 	  int arenaID = getDataInfo(currentPlayer).getArena();
                 	  staffHideSumoduel(p, currentPlayer, sumoManager.duelandoHash.get(currentPlayer));
+                	  p.sendMessage("§6⚒ §eVocê está assistindo " + currentPlayer.getName() + " §e " + sumoManager.duelandoHash.get(currentPlayer).getName());
+            		  p.sendMessage(
+            				  "§e§lINFO: §fArena §7" + getArenaType(getDataInfo(currentPlayer).getArena()).toUpperCase() +
+            				  " §fEfeito §7" + getPotType(getDataInfo(currentPlayer).getPotLvl()).toUpperCase() + 
+            				  " §fRepulsão §7" + getKbTpe(getDataInfo(currentPlayer).getKB()).toUpperCase());
+            		  p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1.0f, 0.5f);
 	                	  switch (arenaID) {
 		                	  	case 0:
 									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
@@ -250,6 +303,31 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 								default:
 									break;
 							}
+                }
+            final String msg = "§eEnviado para a área de moderação. Utilize o comando §7'§f/duelo vertodos§7' §epara ver todos os jogadores.";
+                if (currentItem.getItemMeta().getDisplayName().contains(getMenuTitle("sumo_classica")) && p.hasPermission("zs.mod")) {
+                	LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
+                	p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1.0f, 0.5f);
+                	p.sendMessage(msg);
+                	return;
+                }
+                if (currentItem.getItemMeta().getDisplayName().contains(getMenuTitle("sumo_pequeno")) && p.hasPermission("zs.mod")) {
+                	LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
+                	p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1.0f, 0.5f);
+                	p.sendMessage(msg);
+                	return;
+                }
+                if (currentItem.getItemMeta().getDisplayName().contains(getMenuTitle("sumo_grande")) && p.hasPermission("zs.mod")) {
+                	LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
+                	p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1.0f, 0.5f);
+                	p.sendMessage(msg);
+                	return;
+                }
+                if (currentItem.getItemMeta().getDisplayName().contains(getMenuTitle("arena_x1")) && p.hasPermission("zs.mod")) {
+                	LocationAPI.getLocation().teleportTo(p, location.ENTRADA);
+                	p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1.0f, 0.5f);
+                	p.sendMessage(msg);
+                	return;
                 }
                 if (currentItem.getItemMeta().getDisplayName().equals("§aAvançar")) {
                 	 if (SumoDuelManager.getInstance().getManutencaoStatus() == false) {
@@ -383,9 +461,11 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                         if (!sumoInvite.hasInvite(target)) {
                             if (sumoInvite.canInvite()) {
                             	sumoInvite.sendInviteTo(p, target);
+                            	
 
                                 String jogador = p.getName();
                                 String convidado = target.getName();
+                                
                                 String kb = getKbTpe(getDataInfo(p).getKB());
                                 String pot = getPotType(getDataInfo(p).getPotLvl()); 
                                 String arena = getArenaType(getDataInfo(p).getArena());
@@ -424,7 +504,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                                             .replace("$arena", arena)));
                                 }
                                 
-                               // invite.startTask();  ADD INVITE DO SUMO
+                                sumoInvite.startTask();
                                 chatEventSumo.remove(p);
                                 return;
                             } else {
@@ -452,7 +532,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
     
     public void openModerarMenu(Player p) {
-        Inventory inventory = Bukkit.createInventory(null, 4*9, "Visualizando duelos | Moderação");
+        Inventory inventory = Bukkit.createInventory(null, 4*9, getMenuTitle("duelos_mods_name"));
         SumoDuelManager sumoManager = SumoDuelManager.getInstance();
         DuelManager duel = DuelManager.getInstance();
         Set<Player> addedPlayers = new HashSet<>();
@@ -545,21 +625,21 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         SUMO_MEDIA, 
         SUMO_GRANDE
     }
-    
+
     public ItemStack getMap(MapType mapa) {
     	ItemStack map = null;
     	switch (mapa) {
 			case X1:
-				map = new ItemBuilder(Material.MAP).glow().displayname("§cArena X1").lore(new String[] {"","§e➢ Ir até"}).build();
+				map = new ItemBuilder(Material.MAP).glow().displayname(getMenuTitle("arena_x1")).lore(new String[] {"","§e➥ Ir até"}).build();
 				break;
 			case SUMO_CLASSICA:
-				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo clássica").lore(new String[] {"","§e➢ Ir até"}).build();
+				map = new ItemBuilder(Material.MAP).glow().displayname(getMenuTitle("sumo_classica")).lore(new String[] {"","§e➥ Ir até"}).build();
 				break;
 			case SUMO_MEDIA:
-				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo média").lore(new String[] {"","§e➢ Ir até"}).build();
+				map = new ItemBuilder(Material.MAP).glow().displayname(getMenuTitle("sumo_pequeno")).lore(new String[] {"","§e➥ Ir até"}).build();
 				break;
 			case SUMO_GRANDE:
-				map = new ItemBuilder(Material.MAP).glow().displayname("§cSumo grande").lore(new String[] {"","§e➢ Ir até"}).build();
+				map = new ItemBuilder(Material.MAP).glow().displayname(getMenuTitle("sumo_grande")).lore(new String[] {"","§e➥ Ir até"}).build();
 				break;
 		default:
 			break;
@@ -590,7 +670,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
     
     public static ItemStack selectKB() {
-    	ItemStack item = new ItemBuilder(Material.GOLD_HELMET).displayname(kbSelection).lore(Arrays.asList(new String[] {
+    	ItemStack item = new ItemBuilder(Material.GOLD_HELMET).displayname(getMenuTitle("kbSelection")).lore(Arrays.asList(new String[] {
     			"",
     			"  §b➤ §bNenhum §8(Padrão)",
     			" §8● §7Repulsão 1",
@@ -606,7 +686,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
     
     public static ItemStack selectPot() {
-    	ItemStack item = new ItemBuilder(Material.FEATHER).displayname("§6Customize os efeitos").lore(Arrays.asList(new String[] {
+    	ItemStack item = new ItemBuilder(Material.FEATHER).displayname(getMenuTitle("potSelection")).lore(Arrays.asList(new String[] {
     			"",
     			"  §b➤ §bNenhum §8(Padrão)",
     			" §8● §7Velocidade 1",
@@ -622,7 +702,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
     
     public static ItemStack selectArena() {
-    	ItemStack item = new ItemBuilder(Material.MAP).displayname(arenaSelection).lore(Arrays.asList(new String[] {
+    	ItemStack item = new ItemBuilder(Material.MAP).displayname(getMenuTitle("arenaSelection")).lore(Arrays.asList(new String[] {
     			"",
     			"  §b➤ Arena Clássica §8(Padrão)",
     			" §8● §7Arena Pequena",
@@ -643,7 +723,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     	int potLvl = getDataInfo(p) == null ? 0 : getDataInfo(p).getPotLvl();
     	int arenaLvl = getDataInfo(p) == null ? 0 : getDataInfo(p).getArena();
     	
-    	Inventory inventory = Bukkit.createInventory(null, 3*9, menuSelection);
+    	Inventory inventory = Bukkit.createInventory(null, 3*9, getMenuTitle("menuSelection"));
     	ItemStack vidro = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)0);
     	for (int i = 0; i < inventory.getSize(); i++) {
     		inventory.setItem(i, vidro);
@@ -681,16 +761,16 @@ public class MenuListeners extends ConexaoSQL implements Listener {
            status = "§c§lManutenção";
        }
 
-    	return new ItemBuilder(Material.LEASH).displayname(sumoDuelItem_name).lore(Arrays.asList(new String[] { 
+    	return new ItemBuilder(Material.LEASH).displayname(getMenuTitle("sumoDuelItem_name")).lore(Arrays.asList(new String[] { 
     			"§fDigite o nome do jogador no chat.", "",
-                "  §6" + barrinha + " §fStatus da fila: " + status,
-                "  §6" + barrinha + " §fDuelos ocorrendo: §7" + quantidade,
+                "  §6" + getMenuTitle("barrinha") + " §fStatus da fila: " + status,
+                "  §6" + getMenuTitle("barrinha") + " §fDuelos ocorrendo: §7" + quantidade,
                 " ",
                 " §fDuelos gratuitos no período de testes!"})).build();
     }
     
     public static void openMenuPrincipal(Player p) throws IOException {
-        Inventory inv = Bukkit.createInventory(null, 3 * 9, inventory_name);
+        Inventory inv = Bukkit.createInventory(null, 3 * 9, getMenuTitle("inventory_name"));
         inv.setItem(10, getSkullMenu(p));
         inv.setItem(11, getSumoItem());
         inv.setItem(15, getStorageItem());
@@ -700,14 +780,14 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     }
 
     private static void openTopMenu(Player p) {
-        Inventory inv = Bukkit.createInventory(null, 6 * 9, topmenu_name);
+        Inventory inv = Bukkit.createInventory(null, 6 * 9, getMenuTitle("topmenu_name"));
         getTop10(inv);
         inv.setItem(49, getStatisticItem(p.getName()));
         p.openInventory(inv);
     }
 
     private static void openStorageMenu(Player p) {
-        Inventory inv = Bukkit.createInventory(null, 6 * 9, storagemenu_name);
+        Inventory inv = Bukkit.createInventory(null, 6 * 9, getMenuTitle("storagemenu_name"));
         inv.setItem(49, new ItemBuilder(Material.HOPPER_MINECART).displayname("§aColetar").lore("§7Clique para coletar seus itens.").build());
         if (DuelCache.getCache().hasArmazem(p.getName())) {
             try {
@@ -814,10 +894,10 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 
             meta.setLore(Arrays.asList(new String[]{
                     "",
-                    " §e" + barrinha + " §fVitórias: §7" + vitoriasINT,
-                    " §e" + barrinha + " §fDerrotas: §7" + derrotasINT,
+                    " §e" + getMenuTitle("barrinha") + " §fVitórias: §7" + vitoriasINT,
+                    " §e" + getMenuTitle("barrinha") + " §fDerrotas: §7" + derrotasINT,
                     " ",
-                    " §e" + barrinha + " §f§lKDR: §7" + KDR,
+                    " §e" + getMenuTitle("barrinha") + " §f§lKDR: §7" + KDR,
                     " "}));
             if (mito == 1) {
                 List<String> lore = meta.getLore();
@@ -857,23 +937,23 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     private static ItemStack getStorageItem() {
         ItemStack item = new ItemStack(Material.STORAGE_MINECART);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(storage_name);
+        meta.setDisplayName(getMenuTitle("storage_name"));
         meta.setLore(Arrays.asList(new String[]{
                 "§fClique para acessar o seu armazém",
                 "§fde itens obtidos durante os duelos.",
                 "",
-                " §4§l" + barrinha + " §cColete seus itens antes de duelar, ",
-                " §4§l" + barrinha + " §ccaso contrário, serão perdidos.",
+                " §4§l" + getMenuTitle("barrinha") + " §cColete seus itens antes de duelar, ",
+                " §4§l" + getMenuTitle("barrinha") + " §ccaso contrário, serão perdidos.",
                 " "}));
         item.setItemMeta(meta);
         return item;
     }
 
     private static ItemStack getTopItemStack() {
-        return new ItemBuilder(Material.NETHER_STAR).displayname(leaderboard_name).lore(Arrays.asList(
+        return new ItemBuilder(Material.NETHER_STAR).displayname(getMenuTitle("leaderboard_name")).lore(Arrays.asList(
                 "",
-                " §6" + barrinha + " §eConfira os §6§lTOP 10 §emelhores jogadores",
-                " §6" + barrinha + " §edos duelos §e§l1v1 §ena arena.",
+                " §6" + getMenuTitle("barrinha") + " §eConfira os §6§lTOP 10 §emelhores jogadores",
+                " §6" + getMenuTitle("barrinha") + " §edos duelos §e§l1v1 §ena arena.",
                 "")).build();
     }
 
@@ -886,9 +966,9 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         final String KDR = df.format(derrotas > 0 ? (double) vitorias / derrotas : vitorias);
         return new ItemBuilder(Material.ARMOR_STAND).displayname("§eSuas estatísticas:").lore(Arrays.asList(
                 " ",
-                "§c" + barrinha + " §fSuas vitórias:§7 " + vitorias,
-                "§c" + barrinha + " §fSuas derrotas:§7 " + derrotas,
-                "§c" + barrinha + " §fSeu KDR:§7 " + KDR,
+                "§c" + getMenuTitle("barrinha") + " §fSuas vitórias:§7 " + vitorias,
+                "§c" + getMenuTitle("barrinha") + " §fSuas derrotas:§7 " + derrotas,
+                "§c" + getMenuTitle("barrinha") + " §fSeu KDR:§7 " + KDR,
                 " ",
                 " §7(Aguarde seus dados serem atualizados no top 9)",
                 " ")).build();
@@ -905,11 +985,11 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         meta.setOwner(p.getName());
-        meta.setDisplayName(duelItem_name);
+        meta.setDisplayName(getMenuTitle("duelItem_name"));
         meta.setLore(Arrays.asList(new String[]{
                 "§fDigite o nome do jogador no chat.", "",
-                "  §6" + barrinha + " §fStatus da fila: " + status,
-                "  §6" + barrinha + " §fDuelos ocorrendo: §7" + quantidade,
+                "  §6" + getMenuTitle("barrinha") + " §fStatus da fila: " + status,
+                "  §6" + getMenuTitle("barrinha") + " §fDuelos ocorrendo: §7" + quantidade,
                 " ",
                 " §fEssa ação possui um custo!",
                 " §fTaxa de §6⛃ §e" + custo + " §fpara cada oponente."}));
@@ -931,11 +1011,11 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
             error.printStackTrace();
         }
-        headMeta.setDisplayName(camarote_name);
+        headMeta.setDisplayName(getMenuTitle("camarote_name"));
         headMeta.setLore(Arrays.asList(new String[]{
                 " ",
-                "§7" + barrinha + " §fClique aqui para acessar ou sair",
-                "§7" + barrinha + " §fdo camarote da arena 1v1 quando quiser.",
+                "§7" + getMenuTitle("barrinha") + " §fClique aqui para acessar ou sair",
+                "§7" + getMenuTitle("barrinha") + " §fdo camarote da arena 1v1 quando quiser.",
                 " "}));
         head.setItemMeta(headMeta);
 
@@ -946,7 +1026,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     	ItemStack item = null;
     	switch (i) {
 		case 0:
-	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(kbSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(getMenuTitle("kbSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			"   §b➤ §b§nNenhum §8(Padrão)",
 	    			" §8● §7Repulsão 1",
@@ -956,7 +1036,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	    			"§eClique para alterar.",})).build();
 			break;
 		case 1:
-	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(kbSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(getMenuTitle("kbSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			" §8● §7Nenhum§8 (Padrão)",
 	    			"   §b➤ §b§nRepulsão 1",
@@ -966,7 +1046,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	    			"§eClique para alterar.",})).build();
 			break;
 		case 2:
-	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(kbSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(getMenuTitle("kbSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			" §8● §7Nenhum §8(Padrão)",
 	    			" §8● §7Repulsão 1",
@@ -976,7 +1056,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	    			"§eClique para alterar.",})).build();
 			break;
 		case 3:
-	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(kbSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.GOLD_HELMET).displayname(getMenuTitle("kbSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			" §8● §7Nenhum §8(Padrão)",
 	    			" §8● §7Repulsão 1",
@@ -999,7 +1079,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     	ItemStack item = null;
     	switch (i) {
 		case 0:
-			 item = new ItemBuilder(Material.FEATHER).displayname("§6Customize os efeitos").lore(Arrays.asList(new String[] {
+			 item = new ItemBuilder(Material.FEATHER).displayname(getMenuTitle("potSelection")).lore(Arrays.asList(new String[] {
 					"",
 					"  §b➤ §nNenhum §8(Padrão)",
 					" §8● §7Velocidade 1",
@@ -1009,7 +1089,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 					"§eClique para alterar.",})).build();
 			break;
 		case 1:
-			 item = new ItemBuilder(Material.FEATHER).displayname("§6Customize os efeitos").lore(Arrays.asList(new String[] {
+			 item = new ItemBuilder(Material.FEATHER).displayname(getMenuTitle("potSelection")).lore(Arrays.asList(new String[] {
 						"",
 						" §8● §7Nenhum §8(Padrão)",
 						"  §b➤ §nVelocidade 1",
@@ -1019,7 +1099,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 						"§eClique para alterar.",})).build();
 			break;
 		case 2:
-			 item = new ItemBuilder(Material.FEATHER).displayname("§6Customize os efeitos").lore(Arrays.asList(new String[] {
+			 item = new ItemBuilder(Material.FEATHER).displayname(getMenuTitle("potSelection")).lore(Arrays.asList(new String[] {
 						"",
 						" §8● §7Nenhum §8(Padrão)",
 						" §8● §7Velocidade 1",
@@ -1029,7 +1109,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 						"§eClique para alterar.",})).build();
 			break;
 		case 3:
-			 item = new ItemBuilder(Material.FEATHER).displayname("§6Customize os efeitos").lore(Arrays.asList(new String[] {
+			 item = new ItemBuilder(Material.FEATHER).displayname(getMenuTitle("potSelection")).lore(Arrays.asList(new String[] {
 						"",
 						" §8● §7Nenhum §8(Padrão)",
 						" §8● §7Velocidade 1",
@@ -1052,7 +1132,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     	ItemStack item = null;
     	switch (i) {
 		case 0:
-	    	item = new ItemBuilder(Material.MAP).displayname(arenaSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.MAP).displayname(getMenuTitle("arenaSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			"  §b➤ §nArena Clássica§8 (Padrão)",
 	    			" §8● §7Arena Pequena",
@@ -1061,7 +1141,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	    			"§eClique para alterar.",})).build();
 			break;
 		case 1:
-	    	item = new ItemBuilder(Material.MAP).displayname(arenaSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.MAP).displayname(getMenuTitle("arenaSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			" §8● §7 Arena Clássica §8(Padrão)",
 	    			"  §b➤ §nArena Pequena",
@@ -1070,7 +1150,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
 	    			"§eClique para alterar.",})).build();
 			break;
 		case 2:
-	    	item = new ItemBuilder(Material.MAP).displayname(arenaSelection).lore(Arrays.asList(new String[] {
+	    	item = new ItemBuilder(Material.MAP).displayname(getMenuTitle("arenaSelection")).lore(Arrays.asList(new String[] {
 	    			"",
 	    			" §8● §7Arena Clássica §8(Padrão)",
 	    			" §8● §7Arena Pequena",

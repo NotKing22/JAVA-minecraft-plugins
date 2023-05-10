@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -52,18 +53,26 @@ public class Commands implements CommandExecutor {
 				p.sendMessage("§cHouve um erro ao abrir o menu de duelo. Entre em contato com um Administrador!");
 			}
 		}
-			if (args[0].equalsIgnoreCase("help")) { // funfa
+			if (args[0].equalsIgnoreCase("help")) {
 				if (args.length >= 1) {
 					if (p.hasPermission("zs.gerente")) {
+						p.sendMessage(" ");
+						p.sendMessage(" §6§lDUELO §e- §f(Comandos) v" + Main.getInstance().getDescription().getVersion());
+						p.sendMessage(" ");
+						p.sendMessage(" §f/duelo moderar");
+						p.sendMessage(" §f/duelo set [X1/SUMO]");;
+						p.sendMessage(" §f/duelo verTodos <Nick>");
+						p.sendMessage(" §f/duelo pararLuta <Nick>");
+						p.sendMessage(" §c/duelo manutenção <on/off>");
+						p.sendMessage(" ");
+						return true;
+						}
+					if (p.hasPermission("zs.mod")) {
 						p.sendMessage(" ");
 						p.sendMessage(" §6§lDUELO §e- §f(Comandos)");
 						p.sendMessage(" ");
 						p.sendMessage(" §f/duelo moderar");
-						p.sendMessage(" §f/duelo set [X1/SUMO]");;
-						p.sendMessage(" §f/duelo verDuplas <Nick>");
-						p.sendMessage(" §f/duelo pararLuta <Nick>");
-						p.sendMessage(" §c/duelo manutenção <on/off>");
-						//p.sendMessage(" §c/duelo reload");
+						p.sendMessage(" §f/duelo verTodos <Nick>");
 						p.sendMessage(" ");
 						return true;
 						}
@@ -82,7 +91,6 @@ public class Commands implements CommandExecutor {
 				if (p.hasPermission("zs.mod")) {
 					MenuListeners menu = new MenuListeners();
 					menu.openModerarMenu(p);
-					p.sendMessage("§eEnviado para a área de moderação. Utilize o comando §7'§f/duelo vertodos§7' §epara ver todos os jogadores.");
 					return true;
 				}
 			}
@@ -141,39 +149,39 @@ public class Commands implements CommandExecutor {
 							final String local = args[2].toUpperCase();
 							switch (local) {
 								case "SUMO_CLASSICA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_CLASSICA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.SUMO_CLASSICA);
 									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
 									break;
 								case "SUMO_PEQUENA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_PEQUENA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.SUMO_PEQUENA);
 									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
 									break;
 								case "SUMO_GRANDE":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.SUMO_GRANDE);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.SUMO_GRANDE);
 									p.sendMessage("§eA área de moderação " + local + " foi definida com sucesso!");
 									break;
 								case "POS1_SUMO_CLASSICA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_CLASSICA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS1_SUMO_CLASSICA);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 								case "POS2_SUMO_CLASSICA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_CLASSICA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS2_SUMO_CLASSICA);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 								case "POS1_SUMO_PEQUENA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_PEQUENA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS1_SUMO_PEQUENA);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 								case "POS2_SUMO_PEQUENA":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_PEQUENA);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS2_SUMO_PEQUENA);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 								case "POS1_SUMO_GRANDE":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS1_SUMO_GRANDE);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS1_SUMO_GRANDE);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 								case "POS2_SUMO_GRANDE":
-									LocationAPI.getLocation().sumoTp(p, loc_sumo.POS2_SUMO_GRANDE);
+									LocationAPI.getLocation().setSumoLocation(p, loc_sumo.POS2_SUMO_GRANDE);
 									p.sendMessage("§eA área de " + local + " foi definida com sucesso!");
 									break;
 							default:
@@ -181,21 +189,46 @@ public class Commands implements CommandExecutor {
 								break;
 							}
 						}
-						p.sendMessage("§cUse: /duelo set [X1/SUMO] <argumentos>");
-						return true;
 					}
 				} else {
 					p.sendMessage("§cVocê não tem permissão para executar este comando.");
 					return true;
 				}
+				return true;
 			}
 			
-			// talvez eu apague esse cmd
 			
 			if (args[0].equalsIgnoreCase("desafiar") || args[0].equalsIgnoreCase("convidar") || args[0].equalsIgnoreCase("invite")) {
 				if (args.length == 2) {
+					if (args[1].equalsIgnoreCase("sumo")) {
+						PlayerInventory inv = p.getInventory();
+		            	for (ItemStack i : inv.getContents()) {
+							if(i != null && !(i.getType() == Material.AIR)) {
+								p.sendMessage("§cEsteja com o inventário vázio antes de convidar um jogador.");
+								p.closeInventory();
+								return true;
+							} 
+						} for (ItemStack i : inv.getArmorContents()) {
+							if(i != null && !(i.getType() == Material.AIR)) {
+								p.sendMessage("§cEsteja sem armaduras equipadas antes de convidar um jogador.");
+								p.closeInventory();
+								return true;
+							}
+						}
+							MenuListeners menu = new MenuListeners();
+		                	menu.openMenuSelection(p);
+		                	return true;
+					}
+				}
+				if (args.length < 3) {
+					p.sendMessage("§eSintaxe: /duelo desafiar <X1> <jogador>.");
+					p.sendMessage(" §c➥ /duelo desafiar <SUMO>.");
+					return true;
+				}
+				if (args.length == 3) {
+					if (args[1].equalsIgnoreCase("x1")) {
 					if (DuelManager.getInstance().hasCoin(p)) {
-						final Player target = Bukkit.getPlayer(args[1]);
+						final Player target = Bukkit.getPlayer(args[2]);
 						if (target != null) {
 							if (target != p) {
 								if (!invite.hasInvite(target)) { 
@@ -248,7 +281,11 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 			}
+			p.sendMessage("§cSintaxe: /duelo desafiar <X1/Sumo>.");
+			p.sendMessage(" §c➥ /duelo desafiar <SUMO>.");
+			return true;
 		}
+	}
 			if (args[0].equalsIgnoreCase("verduplas")) {
 				if (p.hasPermission("zs.mod")) {
 					if (args.length < 2) {
@@ -380,29 +417,36 @@ public class Commands implements CommandExecutor {
 				}
 		}
 			// CONVIDOU É OPOSTO DE Y
-		if (args[0].equalsIgnoreCase("aceitar")) { 
-				if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("aceitar")) { 
+				if (args.length < 2) {
+					p.sendMessage("§cUtilize: /Duelo aceitar <Sumo/X1>");
+					return true;
+				}
+				if (args.length == 2) {
+					if (args[1].equalsIgnoreCase("X1")) {
 					if (invite.hasInvite(p)) {
 						if (DuelManager.getInstance().getManutencaoStatus() == false) {
 							if (invite.getConvidou() != p) {
 								if (DuelManager.getInstance().hasCoin(invite.getPlayerX()) && DuelManager.getInstance().hasCoin(invite.getPlayerY())) {
+									DuelManager duel = DuelManager.getInstance();
 									invite.setProtection(true);
 									invite.getPlayerX().setHealth(20);
 									invite.getPlayerY().setHealth(20);
-								DuelManager.getInstance().paymentToEnter(invite.getPlayerX());
-								DuelManager.getInstance().paymentToEnter(invite.getPlayerY());
+								duel.paymentToEnter(invite.getPlayerX());
+								duel.paymentToEnter(invite.getPlayerY());
 										hideOnEnter(invite.getPlayerX(), invite.getPlayerY());
 								LocationAPI.getLocation().teleportTo(invite.getPlayerX(), location.POS1);
 								LocationAPI.getLocation().teleportTo(invite.getPlayerY(), location.POS2);
-									DuelManager.getInstance().getDuelando().add(invite.getPlayerX());
-									DuelManager.getInstance().getDuelando().add(invite.getPlayerY());
-								DuelManager.getInstance().duelandoHash.put(invite.getPlayerX(), invite.getPlayerY());
-								DuelManager.getInstance().duelandoHash.put(invite.getPlayerY(), invite.getPlayerX());
+									duel.getDuelando().add(invite.getPlayerX());
+									duel.getDuelando().add(invite.getPlayerY());
+								duel.duelandoHash.put(invite.getPlayerX(), invite.getPlayerY());
+								duel.duelandoHash.put(invite.getPlayerY(), invite.getPlayerX());
 									SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerX());
 									SimpleclansAPI.getAPI().enableClanDamage(invite.getPlayerY());
 										invite.getConvidou().sendMessage("§a[Duelo] " + invite.getPlayerY().getName() + " §aaceitou seu pedido de duelo.");
 										invite.getPlayerY().sendMessage("§a[Duelo] Você aceitou o pedido de duelo de " + invite.getPlayerX().getName());
 											invite.recuseOrExpireInvite(invite.getPlayerX(), invite.getPlayerY());
+											
 									// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
 									return true;
 								} else {
@@ -418,12 +462,47 @@ public class Commands implements CommandExecutor {
 	        			  return true;
 						}
 					}
+					p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
+					return true;
+				}
+				if (args[1].equalsIgnoreCase("sumo")) {
 					if (DuelManager.getInstance().getManutencaoSumoStatus() == false) {
 						SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
 					if (sumoInvite.getConvidou() != p) {
 						if (sumoInvite.hasInvite(p)) {
 							final Player PlayerX = sumoInvite.getPlayerX();
 							final Player PlayerY = sumoInvite.getPlayerY();
+							
+							PlayerInventory INVENTORY_player_X = PlayerX.getInventory();
+							PlayerInventory INVENTORY_player_Y = PlayerY.getInventory();
+							
+		                	for (ItemStack i : INVENTORY_player_X.getContents()) {
+								if(i != null && !(i.getType() == Material.AIR)) {
+									PlayerX.sendMessage("§cEsteja com o inventário vázio antes de aceitar um convite de duelo.");
+									PlayerY.sendMessage("§cO duelo não pode começar porque §e" + PlayerX.getName() + " §cestá com o inventário cheio.");
+									return true;
+								} 
+							} for (ItemStack i : INVENTORY_player_X.getArmorContents()) {
+								if(i != null && !(i.getType() == Material.AIR)) {
+									PlayerX.sendMessage("§cEsteja sem armaduras equipadas antes de aceitar um convite de duelo.");
+									PlayerY.sendMessage("§cO duelo não pode começar porque §e" + PlayerX.getName() + " §cestá com armaduras equipadas.");
+									return true;
+								}
+							}
+							
+		                	for (ItemStack i : INVENTORY_player_Y.getContents()) {
+								if(i != null && !(i.getType() == Material.AIR)) {
+									PlayerY.sendMessage("§cEsteja com o inventário vázio antes de aceitar um convite de duelo.");
+									PlayerX.sendMessage("§cO duelo não pode começar porque §e" + PlayerY.getName() + " §cestá com o inventário cheio.");
+									return true;
+								} 
+							} for (ItemStack i : INVENTORY_player_Y.getArmorContents()) {
+								if(i != null && !(i.getType() == Material.AIR)) {
+									PlayerY.sendMessage("§cEsteja sem armaduras equipadas antes de aceitar um convite de duelo.");
+									PlayerX.sendMessage("§cO duelo não pode começar porque §e" + PlayerY.getName() + " §cestá com armaduras equipadas.");
+									return true;
+								}
+							}
 							
 								sumoInvite.getConvidou().sendMessage("§a[Sumo] " + PlayerY.getName() + " §aaceitou seu pedido de duelo.");
 								sumoInvite.getPlayerY().sendMessage("§a[Sumo] Você aceitou o pedido de duelo de " + PlayerX.getName());
@@ -438,7 +517,7 @@ public class Commands implements CommandExecutor {
 								PlayerY.setHealth(20);
 								hideOnEnter(PlayerX, PlayerY);
 											
-							switch (arena) {
+						/*	switch (arena) {
 								case 0:
 									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_CLASSICA);
 									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_CLASSICA);
@@ -453,7 +532,7 @@ public class Commands implements CommandExecutor {
 									break;
 								default:
 									break;
-							}
+							}*/
 							switch (pot) {
 								case 0:
 									break;
@@ -497,13 +576,20 @@ public class Commands implements CommandExecutor {
 							sumoManager.duelandoHash.put(PlayerY, PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerX);
 							SimpleclansAPI.getAPI().enableClanDamage(PlayerY);
-							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
+							getDataInfo(PlayerX).setMagicWaterStatus(false);
+							getDataInfo(PlayerY).setMagicWaterStatus(false);
 							PlayerX.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600*20, 0));
 							PlayerY.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 600*20, 0));
+							
+							sumoInvite.runPvPTimer(PlayerX, PlayerY);
+							
+							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
 							
 							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
 								return true;
 							}
+							p.sendMessage("§cVocê não possui um convite de sumo pendente ou ele expirou.");
+							return true;
 						} else {
 							p.sendMessage("§c[Sumo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
 							return true;
@@ -513,13 +599,14 @@ public class Commands implements CommandExecutor {
 	        			  return true;
 						}
 					}
-				p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
-				return true;
+					p.sendMessage("§cUtilize: /Duelo aceitar <Sumo/X1>");
+					return true;
+				}
 			}
 			if (args[0].equalsIgnoreCase("recusar")) {
 				SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
 				if (args.length == 1) {
-					p.sendMessage("Sintaxe: /duelo recusar <X1 ou Sumo>.");
+					p.sendMessage("§cSintaxe: /duelo recusar <X1 ou Sumo>.");
 					return true;
 				}
 				if (args.length == 2) {
@@ -549,12 +636,12 @@ public class Commands implements CommandExecutor {
 							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
 							return true;
 						} else {
-							p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
+							p.sendMessage("§cVocê não possui um convite de sumo pendente ou ele expirou.");
 							return true;
 						}
 					}  else {
-							p.sendMessage("§c[Duelo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
-							return true;
+						p.sendMessage("§c[Sumo] Você já convidou um jogador, aguarde que ele responda ao seu pedido.");
+						return true;
 					}
 				}
 				p.sendMessage("Sintaxe: /duelo recusar <X1 ou Sumo>.");
