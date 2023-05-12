@@ -4,6 +4,7 @@ import me.zsnow.redestone.Main;
 import me.zsnow.redestone.api.LocationAPI;
 import me.zsnow.redestone.api.LocationAPI.location;
 import me.zsnow.redestone.api.SimpleclansAPI;
+import me.zsnow.redestone.api.TitleAPI;
 import me.zsnow.redestone.api.VaultHook;
 import me.zsnow.redestone.cache.DuelCache;
 import me.zsnow.redestone.config.Configs;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -33,12 +35,10 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class DuelListeners implements Listener {
-	
-		// ADICIONAR EVENTO DE QND TOCAR NA AGUA, DPS QUE O EVENTO ACABA VC N MORRE MAIS NA AGUA
-		// TALVEZ POSSA CHECAR ISSO QND VC TIRA O PLAYER DO DUELANDOHASH, VERIFICA SE TA SEM DUPLA SEI LA
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -102,6 +102,9 @@ public class DuelListeners implements Listener {
 			
 			deleteDataSave(morto);
 			e.getDrops().clear();
+			morto.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+			TitleAPI.sendTitle(morto, 0, 80, 0, "§4§lDERROTA", "§6♚ §3" + assassino.getName() + " §evenceu! §6♚");
+			morto.playSound(morto.getLocation(), Sound.ITEM_BREAK, 1.0f, 0.5f);
 			LocationAPI.getLocation().teleportTo(morto, location.SAIDA);
 			morto.chat("/on");
 			
@@ -115,7 +118,8 @@ public class DuelListeners implements Listener {
 			 * 
 			 */
 			
-			assassino.sendTitle("§a§lVITORIA", "§fVocê venceu §7" + morto.getName());
+			TitleAPI.sendTitle(assassino, 0, 80, 0, "§6§lVITORIA", "§6♚ §eVocê venceu §3" + morto.getName() + "§e! §6♚");
+			assassino.playSound(assassino.getLocation(), Sound.PISTON_RETRACT, 1.0f, 0.5f);
 			
 		MenuListeners menuSelection = new MenuListeners();
 		String kb = menuSelection.getKbTpe(getDataInfo(assassino).getKB()); 
@@ -139,7 +143,9 @@ public class DuelListeners implements Listener {
 				@Override
 				public void run() {
 					deleteDataSave(assassino);
+					assassino.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
 					LocationAPI.getLocation().teleportTo(assassino, location.SAIDA);
+					assassino.playSound(assassino.getLocation(), Sound.PISTON_EXTEND, 1.0f, 0.5f);
 				//	duel.paymentToWin(assassino);
 					assassino.chat("/on");
 
@@ -156,17 +162,17 @@ public class DuelListeners implements Listener {
 }
 }
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
 		final Player p = e.getPlayer();
 		SumoDuelManager sumo = SumoDuelManager.getInstance();
 		 if(p.getWorld().getName().equals("PlotMe")) return;
 		Location step = p.getLocation().add(0.0D, -1.0D, 0.0D);
-		if (e.getFrom().getX() != e.getTo().getX() && e.getFrom().getZ() != e.getTo().getZ() && getDataInfo(p) != null) {
+		  if (e.getFrom().getX() != e.getTo().getX() || e.getFrom().getZ() != e.getTo().getZ() || e.getFrom().getY() != e.getTo().getY() && getDataInfo(p) != null) {
 		
 			
 			if ((getDataInfo(p).getUnmove() == true)) {
+				e.setCancelled(true);
 				p.teleport(e.getFrom());
 				return;
 			}
@@ -198,10 +204,14 @@ public class DuelListeners implements Listener {
 				 */
 				
 				deleteDataSave(p);
+				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+				TitleAPI.sendTitle(p, 0, 80, 0, "§4§lDERROTA", "§6♚ §3" + vencedor.getName() + " §evenceu! §6♚");
+				p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1.0f, 0.5f);
 				LocationAPI.getLocation().teleportTo(p, location.SAIDA);
 				p.chat("/on");
 				
-				vencedor.sendTitle("§a§lVITORIA", "§fVocê venceu §7" + p.getName());
+				TitleAPI.sendTitle(vencedor, 0, 80, 0, "§6§lVITORIA", "§6♚ §eVocê venceu §3" + p.getName() + "§e! §6♚");
+				vencedor.playSound(vencedor.getLocation(), Sound.PISTON_RETRACT, 1.0f, 0.5f);
 				
 			MenuListeners menuSelection = new MenuListeners();
 			String kb = menuSelection.getKbTpe(getDataInfo(vencedor).getKB()); 
@@ -226,7 +236,9 @@ public class DuelListeners implements Listener {
 					@Override
 					public void run() {
 						deleteDataSave(vencedor);
+						vencedor.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
 						LocationAPI.getLocation().teleportTo(vencedor, location.SAIDA);
+						vencedor.playSound(vencedor.getLocation(), Sound.PISTON_EXTEND, 1.0f, 0.5f);
 					//	duel.paymentToWin(assassino);
 						vencedor.chat("/on");
 						
@@ -385,6 +397,9 @@ public class DuelListeners implements Listener {
 					String deadAccuracy = sumo.getPercentage(getDataInfo(morto).getHits(), getDataInfo(morto).getWrongHits()); 
 					
 					deleteDataSave(morto);
+					morto.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+					TitleAPI.sendTitle(morto, 0, 80, 0, "§4§lDERROTA", "§6♚ §3" + assassino.getName() + " §evenceu! §6♚");
+					morto.playSound(morto.getLocation(), Sound.ITEM_BREAK, 1.0f, 0.5f);
 					LocationAPI.getLocation().teleportTo(morto, location.SAIDA);
 					morto.chat("/on");
 					
@@ -398,7 +413,8 @@ public class DuelListeners implements Listener {
 					 * 
 					 */
 					
-					assassino.sendTitle("§a§lVITORIA", "§fVocê venceu §7" + morto.getName());
+					TitleAPI.sendTitle(assassino, 0, 80, 0, "§6§lVITORIA", "§6♚ §eVocê venceu §3" + morto.getName() + "§e! §6♚");
+					assassino.playSound(assassino.getLocation(), Sound.PISTON_RETRACT, 1.0f, 0.5f);
 					
 				MenuListeners menuSelection = new MenuListeners();
 				String kb = menuSelection.getKbTpe(getDataInfo(assassino).getKB()); 
@@ -422,7 +438,9 @@ public class DuelListeners implements Listener {
 						@Override
 						public void run() {
 							deleteDataSave(assassino);
+							morto.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
 							LocationAPI.getLocation().teleportTo(assassino, location.SAIDA);
+							assassino.playSound(assassino.getLocation(), Sound.PISTON_EXTEND, 1.0f, 0.5f);
 						//	duel.paymentToWin(assassino);
 							assassino.chat("/on");
 							
@@ -521,9 +539,9 @@ public class DuelListeners implements Listener {
      @EventHandler
 	  public void blockCMD(PlayerCommandPreprocessEvent e) {
 		  Player p = e.getPlayer();
-		  if (DuelManager.getInstance().getDuelando().contains(p)) {
+		  if (DuelManager.getInstance().getDuelando().contains(p) || SumoDuelManager.getInstance().getDuelando().contains(p)) {
 			  for (String cmd : Configs.config.getStringList("comandos-bloqueados")) {
-				  if (e.getMessage().startsWith("/" + cmd) || e.getMessage().startsWith("duelo")) {
+				  if (e.getMessage().startsWith("/" + cmd) || e.getMessage().startsWith("duelo") || e.getMessage().startsWith("x1") || e.getMessage().startsWith("duelos")) {
 					  e.setCancelled(true);
 					  p.sendMessage("§cVocê não pode digitar este comando enquanto está duelando.");
 				  }

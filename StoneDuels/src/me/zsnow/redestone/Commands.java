@@ -33,10 +33,6 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor {
 
-	
-	// AO COMEÇAR SETA AS INFO DO DATAINFO DO PLAYER 1 PARA O PLAYER 2 TMB PQ TA FICANDO VAZIO
-	
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("duelo")) {
@@ -519,8 +515,9 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 				if (args.length == 2) {
+					SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
 					if (args[1].equalsIgnoreCase("X1")) {
-					if (invite.hasInvite(p)) {
+					if (invite.hasInvite(p) && !sumoInvite.hasInvite(p)) {
 						if (DuelManager.getInstance().getManutencaoStatus() == false) {
 							if (invite.getConvidou() != p) {
 								if (DuelManager.getInstance().hasCoin(invite.getPlayerX()) && DuelManager.getInstance().hasCoin(invite.getPlayerY())) {
@@ -558,14 +555,17 @@ public class Commands implements CommandExecutor {
 	        			  return true;
 						}
 					}
+					if (sumoInvite.hasInvite(p)) {
+						p.sendMessage("§cVocê está sendo convidado para um X1 PVP mas também possui um convite de SUMO pendente.");
+						return true;
+					}
 					p.sendMessage("§cVocê não possui um convite de duelo pendente ou ele expirou.");
 					return true;
 				}
 				if (args[1].equalsIgnoreCase("sumo")) {
 					if (DuelManager.getInstance().getManutencaoSumoStatus() == false) {
-						SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
 					if (sumoInvite.getConvidou() != p) {
-						if (sumoInvite.hasInvite(p)) {
+						if (sumoInvite.hasInvite(p) && !invite.hasInvite(p)) { //cuidado com aqui, ele pode n ter sumoinvite e ter invite e talvez entre no laço
 							final Player PlayerX = sumoInvite.getPlayerX();
 							final Player PlayerY = sumoInvite.getPlayerY();
 							
@@ -611,9 +611,9 @@ public class Commands implements CommandExecutor {
 	                                getDataInfo(p).setPotLvl(pot);
 								PlayerX.setHealth(20);
 								PlayerY.setHealth(20);
-								hideOnEnter(PlayerX, PlayerY);
+								hideOnEnterSumo(PlayerX, PlayerY);
 											
-						/*	switch (arena) {
+							switch (arena) {
 								case 0:
 									LocationAPI.getLocation().sumoTp(PlayerX, loc_sumo.POS1_SUMO_CLASSICA);
 									LocationAPI.getLocation().sumoTp(PlayerY, loc_sumo.POS2_SUMO_CLASSICA);
@@ -628,7 +628,7 @@ public class Commands implements CommandExecutor {
 									break;
 								default:
 									break;
-							}*/
+							}
 							switch (pot) {
 								case 0:
 									break;
@@ -682,6 +682,10 @@ public class Commands implements CommandExecutor {
 							sumoInvite.recuseOrExpireInvite(sumoInvite.getPlayerX(), sumoInvite.getPlayerY());
 							
 							// TELEPORTAR PRIMEIRO, ADD NO DUELANDO DEPOIS (SEMPRE)
+								return true;
+							}
+							if (invite.hasInvite(p)) {
+								p.sendMessage("§cVocê está sendo convidado para um SUMO mas também possui um convite de X1 PVP pendente.");
 								return true;
 							}
 							p.sendMessage("§cVocê não possui um convite de sumo pendente ou ele expirou.");
@@ -758,6 +762,18 @@ public class Commands implements CommandExecutor {
 	
 	public void hideOnEnter(Player player1, Player player2) {
 		for (Player duelandoPlayers : DuelManager.getInstance().getDuelando()) {
+			duelandoPlayers.hidePlayer(player1);
+			duelandoPlayers.hidePlayer(player2);
+			player1.hidePlayer(duelandoPlayers);
+			player2.hidePlayer(duelandoPlayers);
+		}
+		player1.showPlayer(player2);
+		player2.showPlayer(player1);
+	}
+
+	
+	public void hideOnEnterSumo(Player player1, Player player2) {
+		for (Player duelandoPlayers : SumoDuelManager.getInstance().getDuelando()) {
 			duelandoPlayers.hidePlayer(player1);
 			duelandoPlayers.hidePlayer(player2);
 			player1.hidePlayer(duelandoPlayers);

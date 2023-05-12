@@ -65,9 +65,9 @@ venceu-broadcast:
 #		███████  ██████  ██      ██  ██████      ██        ████   ██   
 #
 
-has-sumo-broadcast: false
+has-sumo-broadcast: true
 sumo-duelo-broadcast:
- - "&b&l[SUMO-X1]&f $jogador &3convidou&f $convidado &3para um X1."
+ - "&b&l[SUMO-X1]&f $jogador &3convidou&f $convidado &3para um sumo."
  
 convite-enviado-sumo:
   - "&b&l[SUMO-X1] &aConvite enviado para&f $convidado"

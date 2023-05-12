@@ -83,24 +83,6 @@ public class MenuListeners extends ConexaoSQL implements Listener {
     public static String getMenuTitle(String nome) {
         return menu_title.get(nome);
     }
-
-    /*final private static String storage_name = "§eArmazém de itens";
-    final private static String leaderboard_name = "§bLeaderboard";
-    final private static String camarote_name = "§eCamarote";
-    final private static String duelItem_name = "§aDesafiar 1v1 PvP!";
-    final private static String sumoDuelItem_name = "§bDesafiar 1v1 Sumo! §e§l(NOVO)";
-    
-    final private static String barrinha = "│";
-    
-    final private static String kbSelection = "§6Customize o KnockBack";
-    final private static String potSelection = "§6Customize os efeitos";
-    final private static String arenaSelection = "§6Escolha a arena";
-
-    final private static String storagemenu_name = "§b§lDUELO §fSeu armazém";
-    final private static String inventory_name = "§b§lDUELO §fDesafie um jogador";
-    final private static String topmenu_name = "§b§lDUELO §fTop 9 jogadores";
-    final private static String menuSelection = "§b§lDUELO §fSumo Configurações";
-    final private static String duelos_mods_name = "Visualizando duelos | Moderação";*/
     
     public ArrayList<Player> chatEventPvP = new ArrayList<>();
     public ArrayList<Player> chatEventSumo = new ArrayList<>();
@@ -332,7 +314,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                 if (currentItem.getItemMeta().getDisplayName().equals("§aAvançar")) {
                 	 if (SumoDuelManager.getInstance().getManutencaoStatus() == false) {
                     if (!chatEventSumo.contains(p)) {
-                        if (InviteManager.getInstance().canInvite()) { 
+                        if (SumoInviteManager.getInstance().canInvite()) { 
                         	chatEventSumo.add(p);
 			                    p.closeInventory();
 			                    p.sendMessage(" ");
@@ -384,14 +366,23 @@ public class MenuListeners extends ConexaoSQL implements Listener {
         InviteManager invite = InviteManager.getInstance();
         SumoInviteManager sumoInvite = SumoInviteManager.getInstance();
         final Player p = e.getPlayer();
+        if (e.getMessage().equals("cancelar")) {
+        	if (chatEventPvP.contains(p)) {
+	            p.sendMessage("§c§lVocê optou por cancelar a ação convite de duelo.");
+	            chatEventPvP.remove(p);
+	            e.setCancelled(true);
+	            return;
+        	}
+        	if (chatEventSumo.contains(p)) {
+	            p.sendMessage("§c§lVocê optou por cancelar a ação convite de duelo.");
+	            chatEventPvP.remove(p);
+	            e.setCancelled(true);
+	            return;
+        	}
+        }
         if (chatEventPvP.contains(p)) {
             e.setCancelled(true);
             final Player target = Bukkit.getPlayer(e.getMessage());
-            if (e.getMessage().equals("cancelar")) {
-                p.sendMessage("§c§lVocê optou por cancelar a ação convite de duelo.");
-                chatEventPvP.remove(p);
-                return;
-            }
             if (DuelManager.getInstance().hasCoin(p)) {
                 if (target != null) {
                     if (target != p) {
@@ -448,14 +439,8 @@ public class MenuListeners extends ConexaoSQL implements Listener {
             chatEventPvP.remove(p);
         }
         if (chatEventSumo.contains(p)) {
-            e.setCancelled(true);
             final Player target = Bukkit.getPlayer(e.getMessage());
-            if (e.getMessage().equals("cancelar")) {
-                p.sendMessage("§c§lVocê optou por cancelar a ação convite de duelo.");
-                chatEventSumo.remove(p);
-                return;
-            }
-            if (DuelManager.getInstance().hasCoin(p)) {
+            e.setCancelled(true);
                 if (target != null) {
                     if (target != p) {
                         if (!sumoInvite.hasInvite(target)) {
@@ -505,6 +490,7 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                                 }
                                 
                                 sumoInvite.startTask();
+                                
                                 chatEventSumo.remove(p);
                                 return;
                             } else {
@@ -523,13 +509,9 @@ public class MenuListeners extends ConexaoSQL implements Listener {
                     p.sendMessage("§cO jogador especificado não está online.");
                     p.sendMessage("§c§lA ação convite de duelo foi cancelada automaticamente");
                 }
-            } else {
-                p.sendMessage("§cVocê não tem dinheiro o suficiente para desafiar um jogador.");
-                p.sendMessage("§c§lA ação convite de duelo foi cancelada automaticamente");
             }
             chatEventSumo.remove(p);
         }
-    }
     
     public void openModerarMenu(Player p) {
         Inventory inventory = Bukkit.createInventory(null, 4*9, getMenuTitle("duelos_mods_name"));

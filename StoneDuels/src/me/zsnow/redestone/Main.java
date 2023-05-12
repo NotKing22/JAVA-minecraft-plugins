@@ -30,6 +30,17 @@ public class Main extends JavaPlugin {
 	    return this.economy != null;
 	  }
 	
+		public static void load() {
+			try {
+				me.zsnow.redestone.api.TitleAPI.load();	
+			} 
+			catch (Exception e) {}
+		}
+		
+		private void enablePlugin() {
+			load();
+		}
+	  
 		public String getMito() {
 			return MysqlMethods.mito;
 		}
@@ -50,6 +61,8 @@ public class Main extends JavaPlugin {
 				Configs.mito.reloadConfig();
 			}
 		setupEconomy();
+		checkServerVersion();
+		enablePlugin();
 		getCommand("duelo").setExecutor(new Commands());
 		getCommand("mito").setExecutor(new CommandMito());
 		Bukkit.getServer().getPluginManager().registerEvents(new MenuListeners(), this);
@@ -64,6 +77,32 @@ public class Main extends JavaPlugin {
 		MysqlMethods.forceUpdateSQL();
 		ConexaoSQL.closeConnection();
 	}
+	
+	private Version checkServerVersion() {
+		String ver = Bukkit.getVersion();
+
+		if (ver.contains("1.13"))
+			return Version.v1_13;
+		else if (ver.contains("1.12"))
+			return Version.v1_12;
+		else if (ver.contains("1.11"))
+			return Version.v1_11;
+		else if (ver.contains("1.10"))
+			return Version.v1_10;
+		else if (ver.contains("1.9"))
+			return Version.v1_9;
+		else if (ver.contains("1.8"))
+			return Version.v1_8;
+		else if (ver.contains("1.7"))
+			return Version.v1_7;
+		else if (ver.contains("1.6"))
+			return Version.v1_6;
+		else if (ver.contains("1.5"))
+			return Version.v1_5;
+		else
+			return Version.DESCONHECIDA;
+	}
+
 	
 	
 }
