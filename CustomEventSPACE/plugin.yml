@@ -1,0 +1,9 @@
+name: CustomEvent
+version: 1.0
+author: [zSnowReach]
+main: br.com.zsnow.eventocustom.Main
+commands:
+  evento:
+    aliases: [evc]
+  editaritem:
+    aliases: [ei]
