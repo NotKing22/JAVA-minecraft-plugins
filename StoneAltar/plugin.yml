@@ -1,0 +1,5 @@
+name: StoneAltar
+version: 1.0
+main: me.zsnow.stone.altar.Main
+commands:
+  altar:
