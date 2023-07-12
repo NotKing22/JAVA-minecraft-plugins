@@ -1,0 +1,7 @@
+name: StoneLeague
+version: 1.0
+main: me.zsnow.stone.league.Main
+softdepend: [PlaceholderAPI]
+commands:
+  league:
+    aliases: [liga, ligas]
